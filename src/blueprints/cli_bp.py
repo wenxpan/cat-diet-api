@@ -67,8 +67,8 @@ def seed_db():
 
     # seed notes
     notes = [
-        Note(message='my cat likes it'),
-        Note(message='my cat hates it', is_negative=True)
+        Note(cat_id=1, food_id=2, message='my cat likes it'),
+        Note(cat_id=2, food_id=2, message='my cat hates it', is_negative=True)
     ]
     db.session.query(Note).delete()
     db.session.add_all(notes)

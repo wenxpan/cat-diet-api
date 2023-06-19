@@ -1,4 +1,5 @@
 from init import db, ma
+from marshmallow import fields
 
 
 class Food(db.Model):
@@ -9,7 +10,12 @@ class Food(db.Model):
     name = db.Column(db.String, nullable=False, unique=True)
     brand = db.Column(db.String)
 
+    notes = db.relationship('Note', back_populates='food')
+
 
 class FoodSchema(ma.Schema):
+    notes = fields.List(fields.Nested('NoteSchema', exclude=[
+        'food']))
+
     class Meta:
-        fields = ('id', 'type', 'name', 'brand')
+        fields = ('id', 'type', 'name', 'brand', 'notes')

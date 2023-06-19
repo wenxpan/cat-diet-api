@@ -16,10 +16,15 @@ class Cat(db.Model):
         'users.id', ondelete='CASCADE'), nullable=False)
     owner = db.relationship('User', back_populates='cats')
 
+    notes = db.relationship('Note', back_populates='cat')
+
 
 class CatSchema(ma.Schema):
     owner = fields.Nested('UserSchema', exclude=[
                           'password', 'email', 'is_admin', 'cats'])
 
+    notes = fields.List(fields.Nested('NoteSchema', exclude=[
+        'cat']))
+
     class Meta:
-        fields = ('id', 'name', 'year_born', 'year_adopted', 'owner')
+        fields = ('id', 'name', 'year_born', 'year_adopted', 'owner', 'notes')
