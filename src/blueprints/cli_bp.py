@@ -26,7 +26,11 @@ def seed_db():
         User(username='John',
              email='john@gmail.com',
              password=bcrypt.generate_password_hash(
-                 'johnisuser123').decode('utf-8'))
+                 'johnisuser123').decode('utf-8')),
+        User(username='Frank',
+             email='frank@gmail.com',
+             password=bcrypt.generate_password_hash(
+                 'frankisuser123').decode('utf-8'))
     ]
     db.session.query(User).delete()
     db.session.add_all(users)
@@ -50,15 +54,15 @@ def seed_db():
         Cat(name='Luna', year_born='2020',
             year_adopted='2021', breed='Domestic Shorthair',
             owner_id=1),
-        Cat(name='Simba', year_adopted='2022',
+        Cat(name='Leo', year_adopted='2022',
             breed='Exotic Shorthair',
-            owner_id=1),
+            owner_id=2),
         Cat(name='Milo', year_born='2015',
             year_adopted='2019', breed='Ragdoll',
             owner_id=2),
         Cat(name='Oreo', year_adopted='2019',
             breed='Domestic Longhair',
-            owner_id=2),
+            owner_id=3),
     ]
 
     db.session.query(Cat).delete()
@@ -67,8 +71,11 @@ def seed_db():
 
     # seed notes
     notes = [
-        Note(cat_id=1, food_id=2, message='my cat likes it'),
-        Note(cat_id=2, food_id=2, message='my cat hates it', is_negative=True)
+        Note(cat_id=1, food_id=1, message='my cat likes it'),
+        Note(cat_id=2, food_id=1, message='my cat likes it'),
+        Note(cat_id=2, food_id=2, message='my cat hates it', is_negative=True),
+        Note(cat_id=3, food_id=3, message='ate half the portion'),
+        Note(cat_id=4, food_id=3, message='sniffed and went away', is_negative=True)
     ]
     db.session.query(Note).delete()
     db.session.add_all(notes)

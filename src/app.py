@@ -2,6 +2,7 @@ from flask import Flask
 from os import environ
 from init import db, ma, bcrypt, jwt
 from blueprints.cli_bp import cli_bp
+from blueprints.auth_bp import auth_bp
 
 
 def create_app():
@@ -16,5 +17,6 @@ def create_app():
     bcrypt.init_app(app)
 
     app.register_blueprint(cli_bp)
+    app.register_blueprint(auth_bp)
 
     return app
