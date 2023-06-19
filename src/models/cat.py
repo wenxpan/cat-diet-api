@@ -1,4 +1,5 @@
 from init import db, ma
+from marshmallow import fields
 
 
 class Cat(db.Model):
@@ -10,7 +11,15 @@ class Cat(db.Model):
     year_adopted = db.Column(db.String)
     breed = db.Column(db.String)
 
+    # one user can have many cats; cascade delete
+    owner_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'), nullable=False)
+    owner = db.relationship('User', back_populates='cats')
+
 
 class CatSchema(ma.Schema):
+    owner = fields.Nested('UserSchema', exclude=[
+                          'password', 'email', 'is_admin', 'cats'])
+
     class Meta:
-        fields = ('id', 'name', 'year_born', 'year_adopted')
+        fields = ('id', 'name', 'year_born', 'year_adopted', 'owner')

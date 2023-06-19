@@ -48,13 +48,17 @@ def seed_db():
     # seed cats
     cats = [
         Cat(name='Luna', year_born='2020',
-            year_adopted='2021', breed='Domestic Shorthair'),
+            year_adopted='2021', breed='Domestic Shorthair',
+            owner_id=1),
         Cat(name='Simba', year_adopted='2022',
-            breed='Exotic Shorthair'),
+            breed='Exotic Shorthair',
+            owner_id=1),
         Cat(name='Milo', year_born='2015',
-            year_adopted='2019', breed='Ragdoll'),
+            year_adopted='2019', breed='Ragdoll',
+            owner_id=2),
         Cat(name='Oreo', year_adopted='2019',
-            breed='Domestic Longhair'),
+            breed='Domestic Longhair',
+            owner_id=2),
     ]
 
     db.session.query(Cat).delete()

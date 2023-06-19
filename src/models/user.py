@@ -1,4 +1,5 @@
 from init import db, ma
+from marshmallow import fields
 
 
 class User(db.Model):
@@ -10,7 +11,11 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+    cats = db.relationship('Cat', back_populates='owner')
+
 
 class UserSchema(ma.Schema):
+    cats = fields.List(fields.Nested('CatSchema', exclude=['id', 'owner']))
+
     class Meta:
-        fields = ('username', 'email', 'password', 'is_admin')
+        fields = ('id', 'username', 'email', 'password', 'is_admin', 'cats')
