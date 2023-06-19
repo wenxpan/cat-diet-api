@@ -11,7 +11,8 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    cats = db.relationship('Cat', back_populates='owner')
+    cats = db.relationship('Cat', back_populates='owner',
+                           cascade='all, delete')
 
 
 class UserSchema(ma.Schema):

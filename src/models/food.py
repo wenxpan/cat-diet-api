@@ -10,7 +10,8 @@ class Food(db.Model):
     name = db.Column(db.String, nullable=False, unique=True)
     brand = db.Column(db.String)
 
-    notes = db.relationship('Note', back_populates='food')
+    notes = db.relationship(
+        'Note', back_populates='food', cascade='all, delete')
 
 
 class FoodSchema(ma.Schema):

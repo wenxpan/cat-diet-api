@@ -16,7 +16,8 @@ class Cat(db.Model):
         'users.id', ondelete='CASCADE'), nullable=False)
     owner = db.relationship('User', back_populates='cats')
 
-    notes = db.relationship('Note', back_populates='cat')
+    notes = db.relationship(
+        'Note', back_populates='cat', cascade='all, delete')
 
 
 class CatSchema(ma.Schema):
