@@ -16,7 +16,7 @@ class User(db.Model):
 
 
 class UserSchema(ma.Schema):
-    cats = fields.List(fields.Nested('CatSchema', exclude=['id', 'owner']))
+    cats = fields.List(fields.Nested('CatSchema', exclude=['owner']))
 
     class Meta:
         fields = ('id', 'username', 'email', 'password', 'is_admin', 'cats')

@@ -28,4 +28,5 @@ class CatSchema(ma.Schema):
         'cat']))
 
     class Meta:
-        fields = ('id', 'name', 'year_born', 'year_adopted', 'owner', 'notes')
+        fields = ('id', 'name', 'breed', 'year_born',
+                  'year_adopted', 'owner', 'notes')
