@@ -1,5 +1,6 @@
 from init import db, ma
 from marshmallow import fields
+from datetime import date
 
 
 class Note(db.Model):
@@ -7,7 +8,7 @@ class Note(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String)
-    date_created = db.Column(db.Date)
+    date_created = db.Column(db.Date, default=date.today())
     is_negative = db.Column(db.Boolean, default=False)
 
     cat_id = db.Column(db.Integer, db.ForeignKey(
@@ -27,4 +28,4 @@ class NoteSchema(ma.Schema):
 
     class Meta:
         fields = ('id', 'message', 'date_created',
-                  'is_negative', 'cat', 'food')
+                  'is_negative', 'cat_id', 'cat', 'food_id', 'food')
