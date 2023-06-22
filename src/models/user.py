@@ -1,5 +1,7 @@
 from init import db, ma
 from marshmallow import fields
+from marshmallow.validate import Length, OneOf, And, Regexp
+from datetime import date
 
 
 class User(db.Model):
@@ -10,6 +12,7 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    joined_since = db.Column(db.Date, default=date.today())
 
     cats = db.relationship('Cat', back_populates='owner',
                            cascade='all, delete')
@@ -18,6 +21,19 @@ class User(db.Model):
 class UserSchema(ma.Schema):
     cats = fields.List(fields.Nested('CatSchema', exclude=['owner']))
 
+    email = fields.String(required=True, validate=Regexp(
+        '[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+', error='Please provide a valid email address'))
+
+    password = fields.String(required=True, validate=Regexp(
+        '^(?=.*?[a-zA-Z])(?=.*?[0-9]).{8,32}$',
+        error='Password must be 8-32 characters long and must contain at least one English letter and one number.'))
+
+    username = fields.String(
+        required=True, validate=Regexp(
+            '^[a-zA-Z0-9_-]{3,15}$',
+            error='Username must be 3-15 characters long and contain letters, numbers, underscores and dashes only'))
+
     class Meta:
-        fields = ('id', 'username', 'email', 'password', 'is_admin', 'cats')
+        fields = ('id', 'username', 'email', 'password',
+                  'is_admin', 'cats', 'joined_since')
         ordered = True

@@ -7,6 +7,7 @@ from blueprints.users_bp import users_bp
 from blueprints.food_bp import food_bp
 from blueprints.cats_bp import cats_bp
 from blueprints.notes_bp import notes_bp
+from marshmallow.exceptions import ValidationError
 
 
 def create_app():
@@ -23,6 +24,10 @@ def create_app():
     @app.errorhandler(401)
     def unauthorized(err):
         return {'error': str(err)}, 401
+
+    @app.errorhandler(ValidationError)
+    def validation_error(err):
+        return {'error': err.messages}, 400
 
     app.register_blueprint(cli_bp)
     app.register_blueprint(auth_bp)

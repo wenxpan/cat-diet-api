@@ -13,14 +13,15 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 def register():
     try:
         user_info = UserSchema().load(request.json)
-        user = User(username=user_info['username'], email=user_info['email'],
+        user = User(username=user_info['username'],
+                    email=user_info['email'],
                     password=bcrypt.generate_password_hash(
             user_info['password']).decode('utf-8'))
 
         db.session.add(user)
         db.session.commit()
 
-        return UserSchema(exclude=['password']).dump(user), 201
+        return UserSchema(exclude=['password', 'cats']).dump(user), 201
     except IntegrityError:
         return {'error': 'Email already in use'}, 409
 
