@@ -21,10 +21,10 @@ class FoodSchema(ma.Schema):
         'food']))
 
     name = fields.String(required=True,
-                         validate=Length(min=2, max=200, error='name must be 2-200 characters long'))
+                         validate=Length(min=2, max=200))
 
     brand = fields.String(load_default='Unbranded',
-                          validate=Length(min=2, max=100, error='brand must be 2-100 characters long'))
+                          validate=Length(min=2, max=100))
 
     food_type = fields.String(required=True)
 

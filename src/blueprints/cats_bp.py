@@ -20,17 +20,17 @@ def all_cats():
 @jwt_required()
 def create_cat():
     user_id = get_jwt_identity()
-    cat_info = CatSchema().load(request.json)
+    cat_info = CatSchema().load(request.json, partial=True)
     cat = Cat(
         name=cat_info['name'],
-        year_born=cat_info['year_born'],
-        year_adopted=cat_info['year_adopted'],
-        breed=cat_info['breed'],
+        year_born=cat_info.get('year_born'),
+        year_adopted=cat_info.get('year_adopted'),
+        breed=cat_info.get('breed'),
         owner_id=user_id
     )
     db.session.add(cat)
     db.session.commit()
-    return CatSchema().dump(cat), 201
+    return CatSchema(exclude=['notes']).dump(cat), 201
 
 
 @cats_bp.route('/<int:cat_id>')
@@ -49,9 +49,9 @@ def update_cat(cat_id):
     stmt = db.select(Cat).filter_by(id=cat_id)
     cat = db.session.scalar(stmt)
     owner_id = cat.owner.id
-    cat_info = CatSchema().load(request.json)
     if cat:
         admin_or_owner_required(owner_id)
+        cat_info = CatSchema().load(request.json, partial=True)
         cat.name = cat_info.get('name', cat.name)
         cat.year_born = cat_info.get('year_born', cat.year_born)
         cat.year_adopted = cat_info.get('year_adopted', cat.year_adopted)

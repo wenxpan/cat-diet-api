@@ -24,6 +24,7 @@ def create_food():
         food = Food(
             food_type=food_info['food_type'],
             name=food_info['name'],
+            # maybe change this to get
             brand=food_info['brand']
         )
         db.session.add(food)
