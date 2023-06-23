@@ -16,7 +16,7 @@ def all_users():
     admin_required()
     stmt = db.select(User)
     users = db.session.scalars(stmt)
-    return UserSchema(many=True, exclude=['password']).dump(users)
+    return UserSchema(many=True, exclude=['password', 'cats']).dump(users)
 
 
 @users_bp.route('/', methods=['POST'])
@@ -34,7 +34,7 @@ def create_user():
         )
         db.session.add(user)
         db.session.commit()
-        return UserSchema(exclude=['password']).dump(user), 201
+        return UserSchema(exclude=['password', 'cats']).dump(user), 201
     except IntegrityError:
         return {'error': 'Email already in use'}, 409
 
@@ -54,21 +54,27 @@ def get_one_user(user_id):
 @users_bp.route('/<int:user_id>', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_user(user_id):
-    stmt = db.select(User).filter_by(id=user_id)
-    user = db.session.scalar(stmt)
-    user_info = UserSchema().load(request.json)
-    if user:
-        admin_or_owner_required(user.id)
-        user.username = user_info.get('username', user.username)
-        user.email = user_info.get('email', user.email)
-        new_password = user_info.get('password')
-        if new_password:
+    try:
+        stmt = db.select(User).filter_by(id=user_id)
+        user = db.session.scalar(stmt)
+        user_info = UserSchema().load(request.json, partial=True)
+        if user:
+            admin_or_owner_required(user.id)
+            user.username = user_info.get('username', user.username)
+            user.email = user_info.get('email', user.email)
+            new_password = user_info.get('password')
             user.password = bcrypt.generate_password_hash(
-                new_password).decode('utf-8')
-        db.session.commit()
-        return UserSchema(exclude=['cats']).dump(user)
-    else:
-        return {'error': 'User not found'}, 404
+                new_password).decode('utf-8') if new_password else user.password
+            # new_password = user_info.get('password')
+            # if new_password:
+            #     user.password = bcrypt.generate_password_hash(
+            #         new_password).decode('utf-8')
+            db.session.commit()
+            return UserSchema(exclude=['cats']).dump(user)
+        else:
+            return {'error': 'User not found'}, 404
+    except IntegrityError:
+        return {'error': 'Email already used by other accounts'}, 409
 
 
 @users_bp.route('/<int:user_id>', methods=['DELETE'])

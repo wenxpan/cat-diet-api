@@ -4,7 +4,7 @@ from models.food import Food, FoodSchema
 from flask_jwt_extended import jwt_required
 from blueprints.auth_bp import admin_required
 from flask import request
-
+from sqlalchemy.exc import IntegrityError
 
 food_bp = Blueprint('food', __name__, url_prefix='/food')
 
@@ -19,15 +19,19 @@ def all_food():
 @food_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_food():
-    food_info = FoodSchema().load(request.json)
-    food = Food(
-        type=food_info['type'],
-        name=food_info['name'],
-        brand=food_info['brand']
-    )
-    db.session.add(food)
-    db.session.commit()
-    return FoodSchema().dump(food), 201
+    try:
+        food_info = FoodSchema().load(request.json)
+        food = Food(
+            type=food_info['type'],
+            name=food_info['name'],
+            brand=food_info['brand']
+        )
+        db.session.add(food)
+        db.session.commit()
+        return FoodSchema(exclude=['notes']).dump(food), 201
+    except IntegrityError:
+        # maybe add a function to return the food id
+        return {'error': 'Food name already exists'}
 
 
 @food_bp.route('/<int:food_id>')

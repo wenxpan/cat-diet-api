@@ -35,7 +35,7 @@ def login():
             token = create_access_token(
                 identity=user.id, expires_delta=timedelta(days=30))
             # change expiration back to 1 day when submitting
-            return {'token': token, 'user': UserSchema(exclude=['password']).dump(user)}
+            return {'token': token, 'user': UserSchema(exclude=['password', 'cats']).dump(user)}
         else:
             return {'error': 'Invalid email or password'}, 401
     except:

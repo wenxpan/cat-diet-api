@@ -10,7 +10,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String, nullable=False)
+    password = db.Column(db.String(32), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     joined_since = db.Column(db.Date, default=date.today())
 
@@ -32,6 +32,8 @@ class UserSchema(ma.Schema):
         required=True, validate=Regexp(
             '^[a-zA-Z0-9_-]{3,15}$',
             error='Username must be 3-15 characters long and contain letters, numbers, underscores and dashes only'))
+
+    is_admin = fields.Boolean(load_default=False)
 
     class Meta:
         fields = ('id', 'username', 'email', 'password',
