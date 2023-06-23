@@ -1,6 +1,7 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields, validates_schema
 from datetime import date
+from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
 
 
 class Note(db.Model):
@@ -10,6 +11,9 @@ class Note(db.Model):
     message = db.Column(db.String)
     date_created = db.Column(db.Date, default=date.today())
     is_negative = db.Column(db.Boolean, default=False)
+
+    # create_by = db.Column(db.Integer, db.ForeignKey(
+    #     'users.id', ondelete='CASCADE', nullable=False))
 
     cat_id = db.Column(db.Integer, db.ForeignKey(
         'cats.id', ondelete='CASCADE'), nullable=False)
@@ -26,6 +30,12 @@ class NoteSchema(ma.Schema):
 
     food = fields.Nested('FoodSchema', exclude=['notes'])
 
+    is_negative = fields.Boolean(load_default=False)
+
+    cat_id = fields.Integer(required=True)
+
+    food_id = fields.Integer(required=True)
+
     class Meta:
         fields = ('id', 'message', 'date_created',
-                  'is_negative', 'cat_id', 'cat', 'food_id', 'food')
+                  'is_negative', 'cat_id', 'cat', 'food_id', 'food', 'created_by')
