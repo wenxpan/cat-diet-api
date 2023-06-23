@@ -22,7 +22,7 @@ def create_food():
     try:
         food_info = FoodSchema().load(request.json)
         food = Food(
-            type=food_info['type'],
+            food_type=food_info['food_type'],
             name=food_info['name'],
             brand=food_info['brand']
         )
@@ -50,10 +50,10 @@ def update_user(food_id):
     admin_required()
     stmt = db.select(Food).filter_by(id=food_id)
     food = db.session.scalar(stmt)
-    food_info = FoodSchema().load(request.json)
+    food_info = FoodSchema().load(request.json, partial=True)
     if food:
         food.name = food_info.get('name', food.name)
-        food.type = food_info.get('type', food.type)
+        food.food_type = food_info.get('food_type', food.food_type)
         food.brand = food_info.get('brand', food.brand)
         db.session.commit()
         return FoodSchema(exclude=['notes']).dump(food)

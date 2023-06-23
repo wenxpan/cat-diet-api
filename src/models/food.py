@@ -9,7 +9,7 @@ class Food(db.Model):
     __tablename__ = 'food'
 
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(30))
+    food_type = db.Column(db.String(30))
     name = db.Column(db.String(200), nullable=False, unique=True)
     brand = db.Column(db.String(100), default='Unbranded')
     notes = db.relationship(
@@ -26,13 +26,18 @@ class FoodSchema(ma.Schema):
     brand = fields.String(load_default='Unbranded',
                           validate=Length(min=2, max=100, error='brand must be 2-100 characters long'))
 
+    food_type = fields.String(required=True)
+
     @validates_schema()
-    def validate_type(self, data, **kwargs):
-        type = [x for x in VALID_TYPES if x.upper() == data['type'].upper()]
-        if len(type) == 0:
-            raise ValidationError(
-                f'Status must be one of: {VALID_TYPES}')
-        data['type'] = type[0]
+    def validate_food_type(self, data, **kwargs):
+        # only validate when food_type is in the request body
+        if data.get('food_type'):
+            food_type = [x for x in VALID_TYPES if x.upper() ==
+                         data['food_type'].upper()]
+            if len(food_type) == 0:
+                raise ValidationError(
+                    f'Food_type must be one of: {VALID_TYPES}')
+            data['food_type'] = food_type[0]
 
     class Meta:
-        fields = ('id', 'type', 'name', 'brand', 'notes')
+        fields = ('id', 'food_type', 'name', 'brand', 'notes')

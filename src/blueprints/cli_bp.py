@@ -38,10 +38,10 @@ def seed_db():
 
     # seed food
     food = [
-        Food(type='Wet Food', name='Chicken Wet Cat Food Cans', brand='Ziwi'),
-        Food(type='Dry Food', name='Adult Oral Care Dry Cat Food',
+        Food(food_type='Wet', name='Chicken Wet Cat Food Cans', brand='Ziwi'),
+        Food(food_type='Dry', name='Adult Oral Care Dry Cat Food',
              brand='Hills Science Diet'),
-        Food(type='Treats', name='Feline Treats Dental Catnip Flavour Tub',
+        Food(food_type='Dry', name='Feline Treats Dental Catnip Flavour Tub',
              brand='Greenies')
     ]
 
@@ -53,16 +53,16 @@ def seed_db():
     cats = [
         Cat(name='Luna', year_born='2020',
             year_adopted='2021', breed='Domestic Shorthair',
-            owner_id=1),
+            owner=users[0]),
         Cat(name='Leo', year_adopted='2022',
             breed='Exotic Shorthair',
-            owner_id=2),
+            owner=users[1]),
         Cat(name='Milo', year_born='2015',
             year_adopted='2019', breed='Ragdoll',
-            owner_id=2),
+            owner=users[1]),
         Cat(name='Oreo', year_adopted='2019',
             breed='Domestic Longhair',
-            owner_id=3),
+            owner=users[2]),
     ]
 
     db.session.query(Cat).delete()
@@ -71,11 +71,13 @@ def seed_db():
 
     # seed notes
     notes = [
-        Note(cat_id=1, food_id=1, message='my cat likes it'),
-        Note(cat_id=2, food_id=1, message='my cat likes it'),
-        Note(cat_id=2, food_id=2, message='my cat hates it', is_negative=True),
-        Note(cat_id=3, food_id=3, message='ate half the portion'),
-        Note(cat_id=4, food_id=3, message='sniffed and went away', is_negative=True)
+        Note(cat=cats[0], food=food[0], message='my cat likes it'),
+        Note(cat=cats[1], food=food[0], message='my cat likes it'),
+        Note(cat=cats[1], food=food[1],
+             message='my cat hates it', is_negative=True),
+        Note(cat=cats[2], food=food[2], message='ate half the portion'),
+        Note(cat=cats[3], food=food[2],
+             message='sniffed and went away', is_negative=True)
     ]
     db.session.query(Note).delete()
     db.session.add_all(notes)
