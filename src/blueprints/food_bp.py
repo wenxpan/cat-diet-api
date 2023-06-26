@@ -1,6 +1,7 @@
 from flask import Blueprint
 from init import db
 from models.food import Food, FoodSchema
+from models.ingredient import Ingredient, IngredientSchema
 from flask_jwt_extended import jwt_required
 from blueprints.auth_bp import admin_required
 from flask import request
@@ -20,13 +21,27 @@ def all_food():
 @jwt_required()
 def create_food():
     try:
-        food_info = FoodSchema().load(request.json)
+        print('processed1')
+        food_info = FoodSchema().load(request.json, partial=True)
+        print('processed2')
         food = Food(
-            food_type=food_info['food_type'],
             name=food_info['name'],
-            # maybe change this to get
-            brand=food_info['brand']
+            food_type=food_info.get('food_type'),
+            brand=food_info.get('brand'),
         )
+        ingredients_info = food_info.get('ingredients')
+        if ingredients_info:
+            for ingredient in ingredients_info:
+                if ingredient.get('id'):
+                    stmt = db.select(Ingredient).filter_by(
+                        id=ingredient['id'])
+                    ingredient_from_id = db.session.scalar(stmt)
+                    if not ingredient_from_id:
+                        return {'error': 'ingredient id not found'}, 400
+                    elif ingredient_from_id in food.ingredients:
+                        pass
+                    else:
+                        food.ingredients.append(ingredient_from_id)
         db.session.add(food)
         db.session.commit()
         return FoodSchema(exclude=['notes']).dump(food), 201

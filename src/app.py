@@ -7,6 +7,7 @@ from blueprints.users_bp import users_bp
 from blueprints.food_bp import food_bp
 from blueprints.cats_bp import cats_bp
 from blueprints.notes_bp import notes_bp
+from blueprints.ingredients_bp import ingredients_bp
 from marshmallow.exceptions import ValidationError
 
 
@@ -35,5 +36,6 @@ def create_app():
     app.register_blueprint(food_bp)
     app.register_blueprint(cats_bp)
     app.register_blueprint(notes_bp)
+    app.register_blueprint(ingredients_bp)
 
     return app

@@ -4,7 +4,7 @@ from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
 from models.ingredient import Ingredient, food_ingredient
 
 
-VALID_TYPES = ['Wet', 'Dry', 'Freeze-dried', 'Raw', 'Home cooked']
+VALID_TYPES = ['Wet', 'Dry', 'Freeze-dried', 'Raw', 'Home cooked', 'Other']
 
 
 class Food(db.Model):
@@ -30,8 +30,8 @@ class FoodSchema(ma.Schema):
 
     food_type = fields.String(required=True)
 
-    ingredients = db.relationship(
-        'Ingredient', secondary=food_ingredient, backref='food')
+    ingredients = fields.List(fields.Nested(
+        'IngredientSchema', exclude=['food']))
 
     @validates_schema()
     def validate_food_type(self, data, **kwargs):
@@ -45,4 +45,4 @@ class FoodSchema(ma.Schema):
             data['food_type'] = food_type[0]
 
     class Meta:
-        fields = ('id', 'food_type', 'name', 'brand', 'notes')
+        fields = ('id', 'food_type', 'name', 'brand', 'notes', 'ingredients')

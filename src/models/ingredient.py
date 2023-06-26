@@ -1,8 +1,9 @@
+from flask import abort
 from init import db, ma
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Length, ValidationError
 
-VALID_TYPES = ['Meat', 'Fish', 'Derivatives']
+VALID_TYPES = ['Meat', 'Fish', 'Derivatives', 'Other']
 
 
 food_ingredient = db.Table('food_ingredient',
@@ -27,7 +28,12 @@ class IngredientSchema(ma.Schema):
     name = fields.String(required=True,
                          validate=Length(min=2, max=100))
 
-    category = fields.String(required=True)
+    category = fields.String()
+
+    food = fields.List(fields.Nested(
+        'FoodSchema', exclude=['notes', 'food_type']))
+
+    # notes = fields.List(fields.Nested('NoteSchema', exclude=['food']))
 
     @validates_schema()
     def validate_food_type(self, data, **kwargs):
@@ -41,4 +47,4 @@ class IngredientSchema(ma.Schema):
             data['category'] = category[0]
 
     class Meta:
-        fields = ('id', 'category', 'name')
+        fields = ('id', 'category', 'name', 'food')
