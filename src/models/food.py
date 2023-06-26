@@ -1,6 +1,8 @@
 from init import db, ma
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
+from models.ingredient import Ingredient, food_ingredient
+
 
 VALID_TYPES = ['Wet', 'Dry', 'Freeze-dried', 'Raw', 'Home cooked']
 
@@ -27,6 +29,9 @@ class FoodSchema(ma.Schema):
                           validate=Length(min=2, max=100))
 
     food_type = fields.String(required=True)
+
+    ingredients = db.relationship(
+        'Ingredient', secondary=food_ingredient, backref='food')
 
     @validates_schema()
     def validate_food_type(self, data, **kwargs):
