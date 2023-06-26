@@ -7,8 +7,8 @@ VALID_TYPES = ['Meat', 'Fish', 'Derivatives']
 
 food_ingredient = db.Table('food_ingredient',
                            db.Column('food_id', db.Integer,
-                                     db.ForeignKey('food.id')),
-                           db.Column('ingredient_id', db.Integer, db.ForeignKey('ingredients.id')))
+                                     db.ForeignKey('food.id'), primary_key=True),
+                           db.Column('ingredient_id', db.Integer, db.ForeignKey('ingredients.id'), primary_key=True))
 
 
 class Ingredient(db.Model):
@@ -16,7 +16,7 @@ class Ingredient(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(30))
-    name = db.Column(db.String(200), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
 
     food = db.relationship(
         'Food', secondary=food_ingredient, backref='ingredients')
@@ -25,7 +25,7 @@ class Ingredient(db.Model):
 class IngredientSchema(ma.Schema):
 
     name = fields.String(required=True,
-                         validate=Length(min=2, max=200))
+                         validate=Length(min=2, max=100))
 
     category = fields.String(required=True)
 

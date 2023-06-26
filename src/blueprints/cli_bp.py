@@ -4,6 +4,7 @@ from models.user import User
 from models.food import Food
 from models.cat import Cat
 from models.note import Note
+from models.ingredient import Ingredient, food_ingredient
 
 cli_bp = Blueprint('db', __name__)
 
@@ -36,11 +37,21 @@ def seed_db():
     db.session.add_all(users)
     db.session.commit()
 
+    # seed ingredients
+    ingredients = [Ingredient(name='chicken', category='Meat'),
+                   Ingredient(name='mackerel', category='Fish'),
+                   Ingredient(name='lamb', category='Meat')]
+
+    db.session.query(Ingredient).delete()
+    db.session.add_all(ingredients)
+    db.session.commit()
+
     # seed food
     food = [
-        Food(food_type='Wet', name='Chicken Wet Cat Food Cans', brand='Ziwi'),
+        Food(food_type='Wet', name='Chicken Wet Cat Food Cans',
+             brand='Ziwi', ingredients=[ingredients[0], ingredients[1]]),
         Food(food_type='Dry', name='Adult Oral Care Dry Cat Food',
-             brand='Hills Science Diet'),
+             brand='Hills Science Diet', ingredients=[Ingredient(name='new', category='Meat')]),
         Food(food_type='Dry', name='Feline Treats Dental Catnip Flavour Tub',
              brand='Greenies')
     ]
