@@ -43,30 +43,21 @@ class UserSchema(ma.Schema):
 
 
 def get_user_statistics(user_id):
-    total_cats = db.session.query(Cat).filter(Cat.owner_id == user_id).count()
+    cats_stmt = db.select(db.func.count()).select_from(
+        Cat).filter(Cat.owner_id == user_id)
+    total_cats = db.session.scalar(cats_stmt)
 
-    total_notes = db.session.query(Cat).join(
-        Cat.notes).filter(Cat.owner_id == user_id).count()
+    notes_stmt = db.select(db.func.count()).select_from(Cat).join(
+        Cat.notes).filter(Cat.owner_id == user_id)
+    total_notes = db.session.scalar(notes_stmt)
 
-    total_food = db.session.query(Cat).join(
+    food_stmt = db.select(db.func.count()).select_from(Cat).join(
         Cat.notes).join(Note.food).filter(
-        Cat.owner_id == user_id).distinct(Note.food_id).count()
-    
-    
+        Cat.owner_id == user_id).group_by(Note.food_id)
+    total_food = db.session.scalar(food_stmt)
 
     return {
         'total_cats': total_cats,
         'total_notes': total_notes,
-        'total_food_reviewed': total_food,
-        'most_positive_food': 'xx',
-        'most_negative_food': 'xx'
+        'total_food_reviewed': total_food
     }
-
-
-# session.query(Hit.ip_address, Hit.user_agent).\
-#     group_by(Hit.ip_address, Hit.user_agent).count()
-
-# query = sqlalchemy.select([
-#     BOOKS.c.genre,
-#     sqlalchemy.func.count(BOOKS.c.genre)
-# ]).group_by(BOOKS.c.genre).filter(BOOKS.c.book_price > 50.0)
