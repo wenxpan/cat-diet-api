@@ -1,7 +1,7 @@
 from flask import Blueprint, abort
 from init import db, bcrypt
 from flask import request
-from models.user import User, UserSchema
+from models.user import User, UserSchema, get_user_statistics
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import create_access_token, get_jwt_identity
 from datetime import timedelta
@@ -35,7 +35,9 @@ def login():
             token = create_access_token(
                 identity=user.id, expires_delta=timedelta(days=30))
             # change expiration back to 1 day when submitting
-            return {'token': token, 'user': UserSchema(exclude=['password', 'cats']).dump(user)}
+            return {'token': token,
+                    'user': UserSchema(exclude=['password', 'cats']).dump(user),
+                    'statistics': get_user_statistics()}
         else:
             return {'error': 'Invalid email or password'}, 401
     except:

@@ -39,3 +39,13 @@ class UserSchema(ma.Schema):
         fields = ('id', 'username', 'email', 'password',
                   'is_admin', 'cats', 'joined_since')
         ordered = True
+
+
+def get_user_statistics():
+    return {
+        'total_cats': 2,
+        'total_notes': 3,
+        'total_food_reviewed': 4,
+        'most_positive_food': 'xx',
+        'most_negative_food': 'xx'
+    }
