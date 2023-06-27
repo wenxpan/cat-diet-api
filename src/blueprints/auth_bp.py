@@ -37,10 +37,10 @@ def login():
             # change expiration back to 1 day when submitting
             return {'token': token,
                     'user': UserSchema(exclude=['password', 'cats']).dump(user),
-                    'statistics': get_user_statistics()}
+                    'statistics': get_user_statistics(user.id)}
         else:
             return {'error': 'Invalid email or password'}, 401
-    except:
+    except KeyError:
         return {'error': 'Email and password are required'}, 400
 
 

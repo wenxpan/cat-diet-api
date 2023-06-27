@@ -2,6 +2,8 @@ from init import db, ma
 from marshmallow import fields
 from marshmallow.validate import Length, OneOf, And, Regexp
 from datetime import date
+from models.cat import Cat, CatSchema
+from models.note import Note
 
 
 class User(db.Model):
@@ -40,11 +42,31 @@ class UserSchema(ma.Schema):
         ordered = True
 
 
-def get_user_statistics():
+def get_user_statistics(user_id):
+    total_cats = db.session.query(Cat).filter(Cat.owner_id == user_id).count()
+
+    total_notes = db.session.query(Cat).join(
+        Cat.notes).filter(Cat.owner_id == user_id).count()
+
+    total_food = db.session.query(Cat).join(
+        Cat.notes).join(Note.food).filter(
+        Cat.owner_id == user_id).distinct(Note.food_id).count()
+    
+    
+
     return {
-        'total_cats': 2,
-        'total_notes': 3,
-        'total_food_reviewed': 4,
+        'total_cats': total_cats,
+        'total_notes': total_notes,
+        'total_food_reviewed': total_food,
         'most_positive_food': 'xx',
         'most_negative_food': 'xx'
     }
+
+
+# session.query(Hit.ip_address, Hit.user_agent).\
+#     group_by(Hit.ip_address, Hit.user_agent).count()
+
+# query = sqlalchemy.select([
+#     BOOKS.c.genre,
+#     sqlalchemy.func.count(BOOKS.c.genre)
+# ]).group_by(BOOKS.c.genre).filter(BOOKS.c.book_price > 50.0)
