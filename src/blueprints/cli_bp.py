@@ -82,13 +82,13 @@ def seed_db():
 
     # seed notes
     notes = [
-        Note(cat=cats[0], food=food[0], message='my cat likes it'),
-        Note(cat=cats[1], food=food[0], message='my cat likes it'),
+        Note(cat=cats[0], food=food[0], rating=1, message='my cat likes it'),
+        Note(cat=cats[1], food=food[0], rating=1, message='my cat likes it'),
         Note(cat=cats[1], food=food[1],
-             message='my cat hates it', is_negative=True),
+             message='my cat hates it', rating=-1),
         Note(cat=cats[2], food=food[2], message='ate half the portion'),
         Note(cat=cats[3], food=food[2],
-             message='sniffed and went away', is_negative=True)
+             message='sniffed and went away', rating=-1)
     ]
     db.session.query(Note).delete()
     db.session.add_all(notes)

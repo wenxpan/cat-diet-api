@@ -16,7 +16,7 @@ notes_bp = Blueprint('notes', __name__, url_prefix='/notes')
 def all_notes():
     stmt = db.select(Note)
     notes = db.session.scalars(stmt)
-    return NoteSchema(many=True).dump(notes)
+    return NoteSchema(many=True, exclude=['cat_id', 'food_id']).dump(notes)
 
 
 @notes_bp.route('/', methods=['POST'])
@@ -35,7 +35,7 @@ def create_note():
         note = Note(
             message=note_info.get('message'),
             date_created=date.today(),
-            is_negative=note_info['is_negative'],
+            rating=note_info['rating'],
             cat_id=note_info['cat_id'],
             food_id=note_info['food_id']
         )
@@ -82,7 +82,7 @@ def update_note(note_id):
 
         else:
             note.message = note_info.get('message', note.message)
-            note.is_negative = note_info.get('is_negative', note.is_negative)
+            note.rating = note_info.get('rating', note.rating)
             note.cat_id = note_info.get('cat_id', note.cat_id)
             note.food_id = note_info.get('food_id', note.food_id)
             db.session.commit()

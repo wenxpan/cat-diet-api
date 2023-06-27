@@ -1,7 +1,7 @@
 from init import db, ma
 from marshmallow import fields, validates_schema
 from datetime import date
-from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
+from marshmallow.validate import Length, OneOf, And, Range, Regexp, ValidationError
 
 
 class Note(db.Model):
@@ -10,7 +10,7 @@ class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String)
     date_created = db.Column(db.Date, default=date.today())
-    is_negative = db.Column(db.Boolean, default=False)
+    rating = db.Column(db.Integer, default=0)
 
     # create_by = db.Column(db.Integer, db.ForeignKey(
     #     'users.id', ondelete='CASCADE', nullable=False))
@@ -26,16 +26,17 @@ class Note(db.Model):
 
 class NoteSchema(ma.Schema):
     cat = fields.Nested('CatSchema', exclude=[
-        'year_born', 'year_adopted', 'notes'])
+        'year_born', 'year_adopted', 'notes', 'owner_id'])
 
     food = fields.Nested('FoodSchema', exclude=['notes'])
 
-    is_negative = fields.Boolean(load_default=False)
+    rating = fields.Integer(
+        load_default=0, validate=Range(min=-1, max=1))
 
     cat_id = fields.Integer(required=True)
 
     food_id = fields.Integer(required=True)
 
     class Meta:
-        fields = ('id', 'message', 'date_created',
-                  'is_negative', 'cat_id', 'cat', 'food_id', 'food', 'created_by')
+        fields = ('id', 'message', 'rating', 'date_created',
+                  'cat_id', 'cat', 'food_id', 'food', 'created_by')
