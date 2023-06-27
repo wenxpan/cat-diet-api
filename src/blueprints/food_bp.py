@@ -2,7 +2,7 @@ from flask import Blueprint
 from init import db
 from models.food import Food, FoodSchema
 from models.ingredient import Ingredient, IngredientSchema
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from blueprints.auth_bp import admin_required
 from flask import request
 from sqlalchemy.exc import IntegrityError
@@ -26,8 +26,10 @@ def create_food():
         print('processed2')
         food = Food(
             name=food_info['name'],
-            food_type=food_info.get('food_type'),
+            category=food_info.get('category'),
             brand=food_info.get('brand'),
+            created_by=get_jwt_identity(),
+            last_modified_by=get_jwt_identity()
         )
         ingredients_info = food_info.get('ingredients')
         if ingredients_info:
@@ -44,7 +46,7 @@ def create_food():
                         food.ingredients.append(ingredient_from_id)
         db.session.add(food)
         db.session.commit()
-        return FoodSchema(exclude=['notes']).dump(food), 201
+        return FoodSchema().dump(food), 201
     except IntegrityError:
         # maybe add a function to return the food id
         return {'error': 'Food name already exists'}
@@ -69,8 +71,25 @@ def update_user(food_id):
     food_info = FoodSchema().load(request.json, partial=True)
     if food:
         food.name = food_info.get('name', food.name)
-        food.food_type = food_info.get('food_type', food.food_type)
+        food.category = food_info.get('category', food.category)
         food.brand = food_info.get('brand', food.brand)
+        food.last_modified_by = get_jwt_identity()
+
+        # make it dry
+        ingredients_info = food_info.get('ingredients')
+        if ingredients_info:
+            food.ingredients = []
+            for ingredient in ingredients_info:
+                if ingredient.get('id'):
+                    stmt = db.select(Ingredient).filter_by(
+                        id=ingredient['id'])
+                    ingredient_from_id = db.session.scalar(stmt)
+                    if not ingredient_from_id:
+                        return {'error': f"ingredient id {ingredient['id']} not found"}, 400
+                    elif ingredient_from_id in food.ingredients:
+                        pass
+                    else:
+                        food.ingredients.append(ingredient_from_id)
         db.session.commit()
         return FoodSchema(exclude=['notes']).dump(food)
     else:

@@ -1,5 +1,5 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields, validates_schema
 from marshmallow.validate import Length, Range, OneOf, And, Regexp, ValidationError
 from datetime import date
 
@@ -32,12 +32,18 @@ class CatSchema(ma.Schema):
     name = fields.String(required=True,
                          validate=Length(max=100))
 
-    year_born = fields.Integer(validate=Range(min=1980, max=date.today().year))
+    year_born = fields.Integer(validate=Range(min=1900, max=date.today().year))
 
     year_adopted = fields.Integer(
-        validate=Range(min=1980, max=date.today().year))
+        validate=Range(min=1900, max=date.today().year))
 
     breed = fields.String(validate=Length(min=5, max=100))
+
+    @validates_schema
+    def validate_numbers(self, data, **kwargs):
+        if data["year_born"] >= data["year_adopted"]:
+            raise ValidationError(
+                "year_adopted must be greater than year_born")
 
     class Meta:
         fields = ('id', 'name', 'breed', 'year_born',

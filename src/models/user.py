@@ -21,8 +21,7 @@ class User(db.Model):
 class UserSchema(ma.Schema):
     cats = fields.List(fields.Nested('CatSchema', exclude=['owner']))
 
-    email = fields.String(required=True, validate=Regexp(
-        '[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+', error='Please provide a valid email address'))
+    email = fields.Email(required=True)
 
     password = fields.String(required=True, validate=Regexp(
         '^(?=.*?[a-zA-Z])(?=.*?[0-9]).{8,32}$',

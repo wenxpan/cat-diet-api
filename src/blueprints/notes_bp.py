@@ -86,7 +86,7 @@ def update_note(note_id):
             note.cat_id = note_info.get('cat_id', note.cat_id)
             note.food_id = note_info.get('food_id', note.food_id)
             db.session.commit()
-            return NoteSchema().dump(note)
+            return NoteSchema(exclude=['cat_id', 'food_id']).dump(note)
     else:
         return {'error': 'Note not found'}, 404
 

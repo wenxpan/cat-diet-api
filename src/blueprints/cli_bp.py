@@ -48,11 +48,11 @@ def seed_db():
 
     # seed food
     food = [
-        Food(food_type='Wet', name='Chicken Wet Cat Food Cans',
+        Food(category='Wet', name='Chicken Wet Cat Food Cans',
              brand='Ziwi', ingredients=[ingredients[0], ingredients[1]]),
-        Food(food_type='Dry', name='Adult Oral Care Dry Cat Food',
+        Food(category='Dry', name='Adult Oral Care Dry Cat Food',
              brand='Hills Science Diet', ingredients=[Ingredient(name='new', category='Meat')]),
-        Food(food_type='Dry', name='Feline Treats Dental Catnip Flavour Tub',
+        Food(category='Dry', name='Feline Treats Dental Catnip Flavour Tub',
              brand='Greenies')
     ]
 

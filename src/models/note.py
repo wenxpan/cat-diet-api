@@ -9,11 +9,9 @@ class Note(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String)
-    date_created = db.Column(db.Date, default=date.today())
     rating = db.Column(db.Integer, default=0)
 
-    # create_by = db.Column(db.Integer, db.ForeignKey(
-    #     'users.id', ondelete='CASCADE', nullable=False))
+    date_created = db.Column(db.Date, default=date.today())
 
     cat_id = db.Column(db.Integer, db.ForeignKey(
         'cats.id', ondelete='CASCADE'), nullable=False)
