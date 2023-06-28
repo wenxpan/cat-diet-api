@@ -58,3 +58,54 @@ flask run
 ```
 
 The server will run on `http://127.0.0.1:5000`.
+
+## Problem identification (R1)
+
+
+
+## Problem justification (R2)
+
+Scenarios:
+- when your cat is on diet, need to keep track of the treats
+- check which one is the cat's favourite food, least favourite food
+
+
+## Database system: benefits and drawbacks (R3)
+
+## Functionalities and benefits of an ORM (R4)
+
+## API endpoints (R5)
+
+## ERD (R6)
+
+## Third party services (R7)
+
+```
+bcrypt==4.0.1
+blinker==1.6.2
+click==8.1.3
+Flask==2.3.2
+Flask-Bcrypt==1.0.1
+Flask-JWT-Extended==4.5.2
+flask-marshmallow==0.15.0
+Flask-SQLAlchemy==3.0.3
+greenlet==2.0.2
+itsdangerous==2.1.2
+Jinja2==3.1.2
+MarkupSafe==2.1.3
+marshmallow==3.19.0
+marshmallow-sqlalchemy==0.29.0
+packaging==23.1
+psycopg2-binary==2.9.6
+PyJWT==2.7.0
+python-dotenv==1.0.0
+SQLAlchemy==2.0.16
+typing_extensions==4.6.3
+Werkzeug==2.3.6
+```
+
+## Porject models and relationships (R8)
+
+## Database relations (R9)
+
+## Project planning and implementation (R10)

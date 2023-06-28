@@ -1,6 +1,8 @@
 from flask import Blueprint
 from init import db
 from models.cat import Cat, CatSchema
+from models.food import Food, FoodSchema
+from models.note import Note, NoteSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from blueprints.auth_bp import admin_required, admin_or_owner_required
 from flask import request
@@ -75,3 +77,18 @@ def delete_cat(cat_id):
         return {}, 200
     else:
         return {'error': 'Cat not found'}, 404
+
+
+@cats_bp.route('/<int:cat_id>/food')
+@jwt_required()
+def get_cat_food(cat_id):
+    stmt = db.select(Food, db.func.count(), db.func.sum(Note.rating)).select_from(Note).join(Food.notes).filter(Note.cat_id == cat_id).group_by(Food.id)
+    total_notes = db.session.execute(stmt)
+    result = []
+    for food, count, rating in total_notes:
+        result.append({
+            'food': FoodSchema(exclude=['ingredients', 'notes']).dump(food),
+            'total_notes': count,
+            'total_rating': rating
+        })
+    return result
