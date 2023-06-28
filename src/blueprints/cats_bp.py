@@ -74,7 +74,7 @@ def delete_cat(cat_id):
         admin_or_owner_required(owner_id)
         db.session.delete(cat)
         db.session.commit()
-        return {}, 200
+        return {'message': f"Cat {cat_id} and related notes deleted"}, 200
     else:
         return {'error': 'Cat not found'}, 404
 

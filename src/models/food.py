@@ -12,20 +12,11 @@ class Food(db.Model):
     __tablename__ = 'food'
 
     id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(30))
     name = db.Column(db.String(200), nullable=False, unique=True)
     brand = db.Column(db.String(100))
+    category = db.Column(db.String(30))
     notes = db.relationship(
         'Note', back_populates='food', cascade='all, delete')
-
-    created_by = db.Column(db.Integer, db.ForeignKey(
-        'users.id'))
-    last_modified_by = db.Column(
-        db.Integer, db.ForeignKey('users.id'))
-
-    # owner_id = db.Column(db.Integer, db.ForeignKey(
-    #     'users.id', ondelete='CASCADE'), nullable=False)
-
 
 class FoodSchema(ma.Schema):
     notes = fields.List(fields.Nested('NoteSchema', exclude=[
@@ -54,3 +45,4 @@ class FoodSchema(ma.Schema):
 
     class Meta:
         fields = ('id', 'category', 'name', 'brand', 'notes', 'ingredients')
+        ordered = True

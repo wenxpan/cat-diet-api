@@ -48,3 +48,4 @@ class CatSchema(ma.Schema):
     class Meta:
         fields = ('id', 'name', 'breed', 'year_born',
                   'year_adopted', 'owner_id', 'owner', 'notes')
+        ordered = True

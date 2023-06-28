@@ -8,8 +8,8 @@ VALID_TYPES = ['Meat', 'Fish', 'Derivatives', 'Other']
 
 food_ingredient = db.Table('food_ingredient',
                            db.Column('food_id', db.Integer,
-                                     db.ForeignKey('food.id'), primary_key=True),
-                           db.Column('ingredient_id', db.Integer, db.ForeignKey('ingredients.id'), primary_key=True))
+                                     db.ForeignKey('food.id', ondelete='CASCADE'), primary_key=True),
+                           db.Column('ingredient_id', db.Integer, db.ForeignKey('ingredients.id', ondelete='CASCADE'), primary_key=True))
 
 
 class Ingredient(db.Model):

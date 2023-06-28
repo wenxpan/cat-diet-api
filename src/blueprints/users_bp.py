@@ -1,6 +1,6 @@
 from flask import Blueprint
 from init import db, bcrypt
-from models.user import User, UserSchema
+from models.user import User, UserSchema, get_user_statistics
 from flask_jwt_extended import jwt_required
 from blueprints.auth_bp import admin_required, admin_or_owner_required
 from flask import request
@@ -16,7 +16,7 @@ def all_users():
     admin_required()
     stmt = db.select(User)
     users = db.session.scalars(stmt)
-    return UserSchema(many=True, exclude=['password', 'cats']).dump(users)
+    return UserSchema(many=True, exclude=['password']).dump(users)
 
 
 @users_bp.route('/', methods=['POST'])
@@ -34,7 +34,7 @@ def create_user():
         )
         db.session.add(user)
         db.session.commit()
-        return UserSchema(exclude=['password', 'cats']).dump(user), 201
+        return UserSchema(exclude=['password']).dump(user), 201
     except IntegrityError:
         return {'error': 'Email already in use'}, 409
 
@@ -46,7 +46,9 @@ def get_one_user(user_id):
     user = db.session.scalar(stmt)
     if user:
         admin_or_owner_required(user.id)
-        return UserSchema(exclude=['password']).dump(user)
+        user_info = UserSchema(exclude=['password']).dump(user)
+        user_info['statistics']=get_user_statistics(user_id)
+        return user_info
     else:
         return {'error': 'User not found'}, 404
 
@@ -65,10 +67,6 @@ def update_user(user_id):
             new_password = user_info.get('password')
             user.password = bcrypt.generate_password_hash(
                 new_password).decode('utf-8') if new_password else user.password
-            # new_password = user_info.get('password')
-            # if new_password:
-            #     user.password = bcrypt.generate_password_hash(
-            #         new_password).decode('utf-8')
             db.session.commit()
             return UserSchema(exclude=['cats']).dump(user)
         else:
@@ -86,6 +84,6 @@ def delete_user(user_id):
     if user:
         db.session.delete(user)
         db.session.commit()
-        return {}, 200
+        return {'message': f"User {user_id} and related cats and notes deleted"}, 200
     else:
         return {'error': 'User not found'}, 404

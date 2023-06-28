@@ -10,31 +10,32 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False)
+    username = db.Column(db.String(15), nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
-    joined_since = db.Column(db.Date, default=date.today())
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    joined_since = db.Column(db.Date, nullable=False, default=date.today())
 
     cats = db.relationship('Cat', back_populates='owner',
                            cascade='all, delete')
 
 
 class UserSchema(ma.Schema):
-    cats = fields.List(fields.Nested('CatSchema', exclude=['owner']))
 
+    username = fields.String(
+        required=True, validate=Regexp(
+            '^[a-zA-Z0-9_-]{3,15}$',
+            error='Username must be 3-15 characters long and contain letters, numbers, underscores and dashes only'))
+    
     email = fields.Email(required=True)
 
     password = fields.String(required=True, validate=Regexp(
         '^(?=.*?[a-zA-Z])(?=.*?[0-9]).{8,32}$',
         error='Password must be 8-32 characters long and must contain at least one English letter and one number.'))
 
-    username = fields.String(
-        required=True, validate=Regexp(
-            '^[a-zA-Z0-9_-]{3,15}$',
-            error='Username must be 3-15 characters long and contain letters, numbers, underscores and dashes only'))
-
     is_admin = fields.Boolean(load_default=False)
+
+    cats = fields.List(fields.Nested('CatSchema', exclude=['owner_id', 'owner', 'notes']))
 
     class Meta:
         fields = ('id', 'username', 'email', 'password',
