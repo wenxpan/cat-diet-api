@@ -88,6 +88,8 @@ Scenarios:
 
 ## ERD (R6)
 
+![ERD for Cat Diet API](./docs/erd.png)
+
 ## Third party services (R7)
 
 ```

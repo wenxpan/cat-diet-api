@@ -16,8 +16,8 @@ class Ingredient(db.Model):
     __tablename__ = 'ingredients'
 
     id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(30))
     name = db.Column(db.String(100), nullable=False, unique=True)
+    category = db.Column(db.String(30))
 
     food = db.relationship(
         'Food', secondary=food_ingredient, backref='ingredients')
@@ -47,4 +47,5 @@ class IngredientSchema(ma.Schema):
             data['category'] = category[0]
 
     class Meta:
-        fields = ('id', 'category', 'name', 'food')
+        fields = ('id', 'name', 'category', 'food')
+        ordered = True

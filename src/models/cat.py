@@ -11,7 +11,7 @@ class Cat(db.Model):
     name = db.Column(db.String(100), nullable=False)
     year_born = db.Column(db.Integer)
     year_adopted = db.Column(db.Integer)
-    breed = db.Column(db.String)
+    breed = db.Column(db.String(100))
 
     # one user can have many cats; cascade delete
     owner_id = db.Column(db.Integer, db.ForeignKey(

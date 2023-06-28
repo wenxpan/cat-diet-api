@@ -11,7 +11,7 @@ class Note(db.Model):
     message = db.Column(db.String)
     rating = db.Column(db.Integer, default=0)
 
-    date_recorded = db.Column(db.Date, default=date.today(), nullable=False)
+    date_recorded = db.Column(db.Date, default=date.today())
 
     cat_id = db.Column(db.Integer, db.ForeignKey(
         'cats.id', ondelete='CASCADE'), nullable=False)

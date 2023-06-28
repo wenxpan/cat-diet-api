@@ -14,7 +14,7 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
-    joined_since = db.Column(db.Date, nullable=False, default=date.today())
+    joined_since = db.Column(db.Date, default=date.today())
 
     cats = db.relationship('Cat', back_populates='owner',
                            cascade='all, delete')
