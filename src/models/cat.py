@@ -23,8 +23,8 @@ class Cat(db.Model):
 
 
 class CatSchema(ma.Schema):
-    owner = fields.Nested('UserSchema', exclude=[
-                          'password', 'email', 'is_admin', 'cats'])
+    owner = fields.Nested('UserSchema', only=[
+                          'username'])
 
     notes = fields.List(fields.Nested('NoteSchema', exclude=[
         'cat']))

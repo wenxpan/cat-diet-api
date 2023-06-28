@@ -98,7 +98,7 @@ def seed_db():
         Note(cat=cats[0], food=food[3], rating=1, message='Luna likes the treats', date_recorded='2023-06-24'),
         Note(cat=cats[0], food=food[1], rating=0, message='Tried a different can and Luna only ate half of it', date_recorded='2023-06-25'),
         Note(cat=cats[0], food=food[1], rating=1, message='Luna ate the whole can, she likes it!', date_recorded='2023-06-26'),
-        Note(cat=cats[0], food=food[1], rating=1, message='Luna ate the whole can, she likes it!', date_recorded='2023-06-26'),
+        Note(cat=cats[0], food=food[1], rating=1, message='Luna is still happy with it!', date_recorded='2023-06-26'),
         Note(cat=cats[1], food=food[1], rating=-1, message='Leo hates it', date_recorded='2023-06-20'),
         Note(cat=cats[2], food=food[1], rating=0, message='Milo was the only cat eating the can, but she did not finish it either', date_recorded='2023-06-20'),
         Note(cat=cats[3], food=food[1], rating=-1, message='Oreo sniffed and went away', date_recorded='2023-06-20'),

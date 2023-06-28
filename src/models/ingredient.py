@@ -31,9 +31,7 @@ class IngredientSchema(ma.Schema):
     category = fields.String()
 
     food = fields.List(fields.Nested(
-        'FoodSchema', exclude=['notes', 'food_type']))
-
-    # notes = fields.List(fields.Nested('NoteSchema', exclude=['food']))
+        'FoodSchema', exclude=['notes', 'ingredients']))
 
     @validates_schema()
     def validate_food_type(self, data, **kwargs):

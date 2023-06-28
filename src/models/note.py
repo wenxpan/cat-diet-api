@@ -38,5 +38,5 @@ class NoteSchema(ma.Schema):
     date_recorded = fields.Date(load_default=date.today())
 
     class Meta:
-        fields = ('id', 'message', 'rating', 'date_recorded',
-                  'cat_id', 'cat', 'food_id', 'food')
+        fields = ('id', 'cat_id', 'cat', 'food_id', 'food', 'rating', 'message', 'date_recorded')
+        ordered = True

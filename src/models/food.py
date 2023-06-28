@@ -21,7 +21,7 @@ class Food(db.Model):
 
 class FoodSchema(ma.Schema):
     notes = fields.List(fields.Nested('NoteSchema', exclude=[
-        'food']))
+        'food_id', 'food', 'cat_id']))
 
     name = fields.String(required=True,
                          validate=Length(min=2, max=200))

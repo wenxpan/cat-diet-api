@@ -15,7 +15,7 @@ cats_bp = Blueprint('cat', __name__, url_prefix='/cats')
 def all_cats():
     stmt = db.select(Cat)
     cats = db.session.scalars(stmt)
-    return CatSchema(many=True).dump(cats)
+    return CatSchema(many=True, exclude=['owner_id', 'notes']).dump(cats)
 
 
 @cats_bp.route('/', methods=['POST'])
@@ -32,7 +32,7 @@ def create_cat():
     )
     db.session.add(cat)
     db.session.commit()
-    return CatSchema(exclude=['notes']).dump(cat), 201
+    return CatSchema(exclude=['owner_id', 'notes']).dump(cat), 201
 
 
 @cats_bp.route('/<int:cat_id>')
@@ -40,7 +40,7 @@ def get_one_cat(cat_id):
     stmt = db.select(Cat).filter_by(id=cat_id)
     cat = db.session.scalar(stmt)
     if cat:
-        return CatSchema().dump(cat)
+        return CatSchema(exclude=['owner_id']).dump(cat)
     else:
         return {'error': 'Cat not found'}, 404
 
@@ -59,7 +59,7 @@ def update_cat(cat_id):
         cat.year_adopted = cat_info.get('year_adopted', cat.year_adopted)
         cat.breed = cat_info.get('breed', cat.breed)
         db.session.commit()
-        return CatSchema(exclude=['notes']).dump(cat)
+        return CatSchema(exclude=['owner_id', 'notes']).dump(cat)
     else:
         return {'error': 'Cat not found'}, 404
 
