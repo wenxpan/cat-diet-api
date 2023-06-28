@@ -3,7 +3,7 @@ from init import db, ma
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Length, ValidationError
 
-VALID_TYPES = ['Meat', 'Fish', 'Derivatives', 'Other']
+VALID_TYPES = ['Meat', 'Seafood', 'Derivatives', 'Grains', 'Vegetables', 'Other']
 
 
 food_ingredient = db.Table('food_ingredient',
@@ -20,7 +20,7 @@ class Ingredient(db.Model):
     category = db.Column(db.String(30))
 
     food = db.relationship(
-        'Food', secondary=food_ingredient, backref='ingredients')
+        'Food', secondary=food_ingredient, back_populates='ingredients')
 
 
 class IngredientSchema(ma.Schema):

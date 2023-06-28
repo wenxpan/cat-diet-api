@@ -17,6 +17,7 @@ class Food(db.Model):
     category = db.Column(db.String(30))
     notes = db.relationship(
         'Note', back_populates='food', cascade='all, delete')
+    ingredients = db.relationship('Ingredient', secondary=food_ingredient, back_populates='food')
 
 class FoodSchema(ma.Schema):
     notes = fields.List(fields.Nested('NoteSchema', exclude=[
@@ -44,5 +45,5 @@ class FoodSchema(ma.Schema):
             data['category'] = category[0]
 
     class Meta:
-        fields = ('id', 'category', 'name', 'brand', 'notes', 'ingredients')
+        fields = ('id', 'name', 'brand', 'category', 'ingredients', 'notes')
         ordered = True

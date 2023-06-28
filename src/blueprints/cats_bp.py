@@ -82,7 +82,7 @@ def delete_cat(cat_id):
 @cats_bp.route('/<int:cat_id>/food')
 @jwt_required()
 def get_cat_food(cat_id):
-    stmt = db.select(Food, db.func.count(), db.func.sum(Note.rating)).select_from(Note).join(Food.notes).filter(Note.cat_id == cat_id).group_by(Food.id)
+    stmt = db.select(Food, db.func.count(), db.func.sum(Note.rating)).select_from(Note).join(Food.notes).filter(Note.cat_id == cat_id).group_by(Food.id).order_by(db.func.sum(Note.rating).desc())
     total_notes = db.session.execute(stmt)
     result = []
     for food, count, rating in total_notes:
