@@ -11,7 +11,7 @@ class Note(db.Model):
     message = db.Column(db.String)
     rating = db.Column(db.Integer, default=0)
 
-    date_created = db.Column(db.Date, default=date.today())
+    date_recorded = db.Column(db.Date, default=date.today(), nullable=False)
 
     cat_id = db.Column(db.Integer, db.ForeignKey(
         'cats.id', ondelete='CASCADE'), nullable=False)
@@ -35,6 +35,8 @@ class NoteSchema(ma.Schema):
 
     food_id = fields.Integer(required=True)
 
+    date_recorded = fields.Date(load_default=date.today())
+
     class Meta:
-        fields = ('id', 'message', 'rating', 'date_created',
-                  'cat_id', 'cat', 'food_id', 'food', 'created_by')
+        fields = ('id', 'message', 'rating', 'date_recorded',
+                  'cat_id', 'cat', 'food_id', 'food')

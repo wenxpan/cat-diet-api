@@ -61,20 +61,30 @@ The server will run on `http://127.0.0.1:5000`.
 
 ## Problem identification (R1)
 
-
-
 ## Problem justification (R2)
 
 Scenarios:
+
 - when your cat is on diet, need to keep track of the treats
 - check which one is the cat's favourite food, least favourite food
-
 
 ## Database system: benefits and drawbacks (R3)
 
 ## Functionalities and benefits of an ORM (R4)
 
 ## API endpoints (R5)
+
+### Auth routes
+
+### User routes
+
+### Food routes
+
+### Ingredient routes
+
+### Cat routes
+
+### Notes routes
 
 ## ERD (R6)
 

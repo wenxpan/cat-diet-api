@@ -21,7 +21,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        return UserSchema(exclude=['password', 'cats']).dump(user), 201
+        return UserSchema(exclude=['password']).dump(user), 201
     except IntegrityError:
         return {'error': 'Email already in use'}, 409
 

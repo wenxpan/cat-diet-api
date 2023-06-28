@@ -45,7 +45,7 @@ def create_note():
 
 
 @notes_bp.route('/<int:note_id>')
-def get_one_cat(note_id):
+def get_one_note(note_id):
     stmt = db.select(Note).filter_by(id=note_id)
     note = db.session.scalar(stmt)
     if note:
