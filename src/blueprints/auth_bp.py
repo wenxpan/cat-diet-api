@@ -6,6 +6,8 @@ from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import create_access_token, get_jwt_identity
 from datetime import timedelta
 
+
+# create blueprint for the /auth endpoint
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 

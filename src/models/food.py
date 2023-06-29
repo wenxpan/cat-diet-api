@@ -9,7 +9,7 @@ VALID_TYPES = ['Wet', 'Dry', 'Freeze-dried',
 
 
 class Food(db.Model):
-    __tablename__ = 'food'
+    __tablename__ = 'foods'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False, unique=True)
@@ -17,7 +17,7 @@ class Food(db.Model):
     category = db.Column(db.String(30))
     notes = db.relationship(
         'Note', back_populates='food', cascade='all, delete')
-    ingredients = db.relationship('Ingredient', secondary=food_ingredient, back_populates='food')
+    ingredients = db.relationship('Ingredient', secondary=food_ingredient, back_populates='foods')
 
 class FoodSchema(ma.Schema):
     notes = fields.List(fields.Nested('NoteSchema', exclude=[
@@ -31,7 +31,7 @@ class FoodSchema(ma.Schema):
     category = fields.String()
 
     ingredients = fields.List(fields.Nested(
-        'IngredientSchema', exclude=['food']))
+        'IngredientSchema', exclude=['foods']))
 
     @validates_schema()
     def validate_category(self, data, **kwargs):

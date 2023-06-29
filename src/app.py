@@ -4,7 +4,7 @@ from init import db, ma, bcrypt, jwt
 from blueprints.cli_bp import cli_bp
 from blueprints.auth_bp import auth_bp
 from blueprints.users_bp import users_bp
-from blueprints.food_bp import food_bp
+from blueprints.foods_bp import foods_bp
 from blueprints.cats_bp import cats_bp
 from blueprints.notes_bp import notes_bp
 from blueprints.ingredients_bp import ingredients_bp
@@ -34,7 +34,7 @@ def create_app():
     app.register_blueprint(cli_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(users_bp)
-    app.register_blueprint(food_bp)
+    app.register_blueprint(foods_bp)
     app.register_blueprint(cats_bp)
     app.register_blueprint(notes_bp)
     app.register_blueprint(ingredients_bp)

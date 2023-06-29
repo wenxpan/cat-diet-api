@@ -1,9 +1,9 @@
 from init import db, ma
 from marshmallow import fields
-from marshmallow.validate import Length, OneOf, And, Regexp
+from marshmallow.validate import Regexp
 from datetime import date
-from models.cat import Cat, CatSchema
-from models.food import Food, FoodSchema
+from models.cat import Cat
+from models.food import Food
 from models.note import Note
 
 
@@ -53,11 +53,11 @@ def get_user_statistics(user_id):
         Cat.notes).filter(Cat.owner_id == user_id)
     total_notes = db.session.scalar(notes_stmt)
 
-    food_stmt = db.select(db.func.count(db.distinct(Food.id))).select_from(Cat).join(Cat.notes).join(Note.food).where(Cat.owner_id == 2).group_by(Cat.owner_id)
-    total_food = db.session.scalar(food_stmt)
+    food_stmt = db.select(db.func.count(db.distinct(Food.id))).select_from(Cat).join(Cat.notes).join(Note.food).where(Cat.owner_id == user_id)
+    total_foods = db.session.scalar(food_stmt)
 
     return {
         'total_cats': total_cats,
         'total_notes': total_notes,
-        'total_food_reviewed': total_food
+        'total_foods_reviewed': total_foods
     }

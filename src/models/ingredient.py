@@ -8,7 +8,7 @@ VALID_TYPES = ['Meat', 'Seafood', 'Derivatives', 'Grains', 'Vegetables', 'Other'
 
 food_ingredient = db.Table('food_ingredient',
                            db.Column('food_id', db.Integer,
-                                     db.ForeignKey('food.id', ondelete='CASCADE'), primary_key=True),
+                                     db.ForeignKey('foods.id', ondelete='CASCADE'), primary_key=True),
                            db.Column('ingredient_id', db.Integer, db.ForeignKey('ingredients.id', ondelete='CASCADE'), primary_key=True))
 
 
@@ -19,7 +19,7 @@ class Ingredient(db.Model):
     name = db.Column(db.String(100), nullable=False, unique=True)
     category = db.Column(db.String(30))
 
-    food = db.relationship(
+    foods = db.relationship(
         'Food', secondary=food_ingredient, back_populates='ingredients')
 
 
@@ -30,11 +30,11 @@ class IngredientSchema(ma.Schema):
 
     category = fields.String()
 
-    food = fields.List(fields.Nested(
+    foods = fields.List(fields.Nested(
         'FoodSchema', exclude=['notes', 'ingredients']))
 
     @validates_schema()
-    def validate_food_type(self, data, **kwargs):
+    def validate_category(self, data, **kwargs):
         # only validate when category is in the request body
         if data.get('category'):
             category = [x for x in VALID_TYPES if x.upper() ==
@@ -45,5 +45,5 @@ class IngredientSchema(ma.Schema):
             data['category'] = category[0]
 
     class Meta:
-        fields = ('id', 'name', 'category', 'food')
+        fields = ('id', 'name', 'category', 'foods')
         ordered = True

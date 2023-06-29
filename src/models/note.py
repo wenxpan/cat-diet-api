@@ -1,7 +1,7 @@
 from init import db, ma
-from marshmallow import fields, validates_schema
+from marshmallow import fields
 from datetime import date
-from marshmallow.validate import Length, OneOf, And, Range, Regexp, ValidationError
+from marshmallow.validate import Range
 
 
 class Note(db.Model):
@@ -18,7 +18,7 @@ class Note(db.Model):
     cat = db.relationship('Cat', back_populates='notes')
 
     food_id = db.Column(db.Integer, db.ForeignKey(
-        'food.id', ondelete='CASCADE'), nullable=False)
+        'foods.id', ondelete='CASCADE'), nullable=False)
     food = db.relationship('Food', back_populates='notes')
 
 

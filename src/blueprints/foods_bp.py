@@ -7,17 +7,17 @@ from blueprints.auth_bp import admin_required
 from flask import request
 from sqlalchemy.exc import IntegrityError
 
-food_bp = Blueprint('food', __name__, url_prefix='/food')
+foods_bp = Blueprint('food', __name__, url_prefix='/foods')
 
 
-@food_bp.route('/')
-def all_food():
+@foods_bp.route('/')
+def all_foods():
     stmt = db.select(Food)
-    food = db.session.scalars(stmt)
-    return FoodSchema(many=True).dump(food)
+    foods = db.session.scalars(stmt)
+    return FoodSchema(many=True).dump(foods)
 
 
-@food_bp.route('/', methods=['POST'])
+@foods_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_food():
     try:
@@ -48,11 +48,10 @@ def create_food():
         db.session.commit()
         return FoodSchema().dump(food), 201
     except IntegrityError:
-        # maybe add a function to return the food id
         return {'error': 'Food name already exists'}
 
 
-@food_bp.route('/<int:food_id>')
+@foods_bp.route('/<int:food_id>')
 def get_one_food(food_id):
     stmt = db.select(Food).filter_by(id=food_id)
     food = db.session.scalar(stmt)
@@ -62,9 +61,9 @@ def get_one_food(food_id):
         return {'error': 'Food not found'}, 404
 
 
-@food_bp.route('/<int:food_id>', methods=['PUT', 'PATCH'])
+@foods_bp.route('/<int:food_id>', methods=['PUT', 'PATCH'])
 @jwt_required()
-def update_user(food_id):
+def update_food(food_id):
     admin_required()
     stmt = db.select(Food).filter_by(id=food_id)
     food = db.session.scalar(stmt)
@@ -96,9 +95,9 @@ def update_user(food_id):
         return {'error': 'Food not found'}, 404
 
 
-@food_bp.route('/<int:food_id>', methods=['DELETE'])
+@foods_bp.route('/<int:food_id>', methods=['DELETE'])
 @jwt_required()
-def delete_user(food_id):
+def delete_food(food_id):
     admin_required()
     stmt = db.select(Food).filter_by(id=food_id)
     food = db.session.scalar(stmt)
