@@ -23,6 +23,9 @@ class Note(db.Model):
 
 
 class NoteSchema(ma.Schema):
+    # marshmallow schema is used for serializing and deserializing data, 
+    # as well as validating and sanitizing user input
+    
     cat = fields.Nested('CatSchema', exclude=[
         'year_born', 'year_adopted', 'notes', 'owner_id'])
 

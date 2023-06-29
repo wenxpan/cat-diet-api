@@ -12,7 +12,10 @@ def get_user_statistics(user_id):
         Cat.notes).filter(Cat.owner_id == user_id)
     total_notes = db.session.scalar(notes_stmt)
 
-    food_stmt = db.select(db.func.count(db.distinct(Food.id))).select_from(Cat).join(Cat.notes).join(Note.food).where(Cat.owner_id == user_id)
+    food_stmt = db.select(db.func.count(
+        db.distinct(Food.id))).select_from(
+        Cat).join(Cat.notes).join(
+        Note.food).where(Cat.owner_id == user_id)
     total_foods = db.session.scalar(food_stmt)
 
     return {

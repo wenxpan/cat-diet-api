@@ -23,6 +23,8 @@ class Cat(db.Model):
 
 
 class CatSchema(ma.Schema):
+    # marshmallow schema is used for serializing and deserializing data, 
+    # as well as validating and sanitizing user input
     owner = fields.Nested('UserSchema', only=[
                           'username'])
 

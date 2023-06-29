@@ -3,6 +3,8 @@ from init import db, ma
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Length, ValidationError
 
+
+# set up a constant outlining all the valid categories of ingredients
 VALID_TYPES = ['Meat', 'Seafood', 'Derivatives', 'Grains', 'Vegetables', 'Other']
 
 
@@ -24,6 +26,8 @@ class Ingredient(db.Model):
 
 
 class IngredientSchema(ma.Schema):
+    # marshmallow schema is used for serializing and deserializing data, 
+    # as well as validating and sanitizing user input
 
     name = fields.String(required=True,
                          validate=Length(min=2, max=100))

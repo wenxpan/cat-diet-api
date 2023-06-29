@@ -1,9 +1,9 @@
 from init import db, ma
 from marshmallow import fields, validates_schema
-from marshmallow.validate import Length, OneOf, And, Regexp, ValidationError
-from models.ingredient import Ingredient, food_ingredient
+from marshmallow.validate import Length, ValidationError
+from models.ingredient import food_ingredient
 
-
+# set up a constant outlining all the valid categories of foods
 VALID_TYPES = ['Wet', 'Dry', 'Freeze-dried',
                'Raw', 'Cooked', 'Treats']
 
@@ -20,6 +20,8 @@ class Food(db.Model):
     ingredients = db.relationship('Ingredient', secondary=food_ingredient, back_populates='foods')
 
 class FoodSchema(ma.Schema):
+    # marshmallow schema is used for serializing and deserializing data, 
+    # as well as validating and sanitizing user input
     notes = fields.List(fields.Nested('NoteSchema', exclude=[
         'food_id', 'food', 'cat_id']))
 
