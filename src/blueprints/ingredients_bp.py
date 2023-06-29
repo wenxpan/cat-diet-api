@@ -2,7 +2,7 @@ from flask import Blueprint
 from init import db
 from models.ingredient import Ingredient, IngredientSchema
 from flask_jwt_extended import jwt_required
-from blueprints.auth_bp import admin_required
+from utils.authorise import admin_required
 from flask import request
 from sqlalchemy.exc import IntegrityError
 

@@ -3,7 +3,7 @@ from init import db, bcrypt
 from models.user import User, UserSchema
 from utils.analyse import get_user_statistics
 from flask_jwt_extended import jwt_required
-from blueprints.auth_bp import admin_required, admin_or_owner_required
+from utils.authorise import admin_required, admin_or_owner_required
 from flask import request
 from sqlalchemy.exc import IntegrityError
 

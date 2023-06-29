@@ -3,7 +3,7 @@ from init import db
 from models.food import Food, FoodSchema
 from models.ingredient import Ingredient, IngredientSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from blueprints.auth_bp import admin_required
+from utils.authorise import admin_required
 from flask import request
 from sqlalchemy.exc import IntegrityError
 
@@ -108,7 +108,7 @@ def update_food(food_id):
 @jwt_required()
 def delete_food(food_id):
     # allows admin to delete a food from database
-    
+
     admin_required()
     stmt = db.select(Food).filter_by(id=food_id)
     food = db.session.scalar(stmt)

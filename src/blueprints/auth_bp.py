@@ -1,10 +1,10 @@
-from flask import Blueprint, abort
+from flask import Blueprint
 from init import db, bcrypt
 from flask import request
 from models.user import User, UserSchema
 from utils.analyse import get_user_statistics
 from sqlalchemy.exc import IntegrityError
-from flask_jwt_extended import create_access_token, get_jwt_identity
+from flask_jwt_extended import create_access_token
 from datetime import timedelta
 
 
@@ -42,32 +42,24 @@ def login():
     # allows user to login and receive a token for authentication and authorization
 
     try:
+        # build the query: select the user with matching email
         stmt = db.select(User).filter_by(email=request.json['email'])
+        # execute query and return a scalar result
         user = db.session.scalar(stmt)
+
+        # hash input password and check against the hashed string in db
         if user and bcrypt.check_password_hash(user.password, request.json['password']):
+            # if passwords match, create access token with the user's id as identity
+            # set token expiry as 1 day
             token = create_access_token(
-                identity=user.id, expires_delta=timedelta(days=30))
-            # change expiration back to 1 day when submitting
+                identity=user.id, expires_delta=timedelta(days=1))
+            # return generated token, user information and statistics summary
             return {'token': token,
                     'user': UserSchema(exclude=['password', 'cats']).dump(user),
                     'statistics': get_user_statistics(user.id)}
+        # if user not in db or passwords do not match, return error
         else:
             return {'error': 'Invalid email or password'}, 401
+    # if either email or password not provided, return error
     except KeyError:
         return {'error': 'Email and password are required'}, 400
-
-
-def admin_required():
-    user_id = get_jwt_identity()
-    stmt = db.select(User).filter_by(id=user_id)
-    user = db.session.scalar(stmt)
-    if not (user and user.is_admin):
-        abort(401, description="You must be an admin")
-
-
-def admin_or_owner_required(owner_id):
-    user_id = get_jwt_identity()
-    stmt = db.select(User).filter_by(id=user_id)
-    user = db.session.scalar(stmt)
-    if not (user and user.is_admin or user_id == owner_id):
-        abort(401, description="You must be an admin or owner")

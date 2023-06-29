@@ -4,7 +4,7 @@ from models.cat import Cat, CatSchema
 from models.food import Food, FoodSchema
 from models.note import Note, NoteSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from blueprints.auth_bp import admin_required, admin_or_owner_required
+from utils.authorise import admin_or_owner_required
 from flask import request
 from marshmallow.validate import ValidationError
 
