@@ -2,15 +2,18 @@ from flask import Blueprint
 from init import db, bcrypt
 from models.user import User
 from models.food import Food
+from models.ingredient import Ingredient
 from models.cat import Cat
 from models.note import Note
-from models.ingredient import Ingredient, food_ingredient
 
+# create blueprint for the /auth endpoint
 cli_bp = Blueprint('db', __name__)
 
 
 @cli_bp.cli.command('create')
 def create_db():
+    # drop and create tables using 'flask db create'
+
     db.drop_all()
     db.create_all()
     print('Tables created successfully')
@@ -18,6 +21,8 @@ def create_db():
 
 @cli_bp.cli.command('seed')
 def seed_db():
+    # seed tables using 'flask db seed'
+
     # seed user
     users = [
         User(username='MaryDev',
@@ -94,15 +99,29 @@ def seed_db():
 
     # seed notes
     notes = [
-        Note(cat=cats[0], food=food[0], rating=0, message='Luna was ok with it, maybe will try a different one', date_recorded='2023-06-24'),
-        Note(cat=cats[0], food=food[3], rating=1, message='Luna likes the treats', date_recorded='2023-06-24'),
-        Note(cat=cats[0], food=food[1], rating=0, message='Tried a different can and Luna only ate half of it', date_recorded='2023-06-25'),
-        Note(cat=cats[0], food=food[1], rating=1, message='Luna ate the whole can, she likes it!', date_recorded='2023-06-26'),
-        Note(cat=cats[0], food=food[1], rating=1, message='Luna is still happy with it!', date_recorded='2023-06-26'),
-        Note(cat=cats[1], food=food[1], rating=-1, message='Leo hates it', date_recorded='2023-06-20'),
-        Note(cat=cats[2], food=food[1], rating=0, message='Milo was the only cat eating the can, but she did not finish it either', date_recorded='2023-06-20'),
-        Note(cat=cats[3], food=food[1], rating=-1, message='Oreo sniffed and went away', date_recorded='2023-06-20'),
-        Note(cat=cats[1], food=food[3], rating=1, message='Leo likes it', date_recorded='2023-06-21'),
+        Note(cat=cats[0], food=food[0], rating=0, message=
+             'Luna was ok with it, maybe will try a different one', 
+             date_recorded='2023-06-24'),
+        Note(cat=cats[0], food=food[3], rating=1, message=
+             'Luna likes the treats', date_recorded='2023-06-24'),
+        Note(cat=cats[0], food=food[1], rating=0, message=
+             'Tried a different can and Luna only ate half of it', 
+             date_recorded='2023-06-25'),
+        Note(cat=cats[0], food=food[1], rating=1, message=
+             'Luna ate the whole can, she likes it!', 
+             date_recorded='2023-06-26'),
+        Note(cat=cats[0], food=food[1], rating=1, message=
+             'Luna is still happy with it!', 
+             date_recorded='2023-06-26'),
+        Note(cat=cats[1], food=food[1], rating=-1, message=
+             'Leo hates it', date_recorded='2023-06-20'),
+        Note(cat=cats[2], food=food[1], rating=0, message=
+             'Milo was the only cat eating the can, but not finished it either', 
+             date_recorded='2023-06-20'),
+        Note(cat=cats[3], food=food[1], rating=-1, message=
+             'Oreo sniffed and went away', date_recorded='2023-06-20'),
+        Note(cat=cats[1], food=food[3], rating=1, message=
+             'Leo likes it', date_recorded='2023-06-21'),
     ]
     db.session.query(Note).delete()
     db.session.add_all(notes)
