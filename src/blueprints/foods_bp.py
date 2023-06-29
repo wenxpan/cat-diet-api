@@ -85,7 +85,7 @@ def update_food(food_id):
         # load data using schema to sanitize and validate input
         food_info = FoodSchema().load(request.json, partial=True)
 
-        # all fields can be optional, so get methods are used
+        # update fields; all fields can be optional, so get methods are used
         food.name = food_info.get('name', food.name)
         food.category = food_info.get('category', food.category)
         food.brand = food_info.get('brand', food.brand)

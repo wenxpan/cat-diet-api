@@ -50,7 +50,7 @@ class CatSchema(ma.Schema):
 
     # exclude field to avoid unwanted recursion
     notes = fields.List(fields.Nested('NoteSchema', exclude=[
-        'cat']))
+        'cat', 'cat_id', 'food_id']))
 
     @validates_schema
     def validate_years(self, data, **kwargs):

@@ -81,7 +81,7 @@ def update_ingredient(ingredient_id):
         # load data using schema to sanitize and validate input
         ingredient_info = IngredientSchema().load(request.json, partial=True)
         
-        # all fields can be optional, so get methods are used
+        # update fields; all fields can be optional, so get methods are used
         ingredient.name = ingredient_info.get('name', ingredient.name)
         ingredient.category = ingredient_info.get(
             'category', ingredient.category)
