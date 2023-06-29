@@ -42,7 +42,7 @@ def login():
     # allows user to login and receive a token for authentication and authorization
 
     try:
-        # build the query: select the user with matching email
+        # build query: select the user with matching email
         stmt = db.select(User).filter_by(email=request.json['email'])
         # execute query and return a scalar result
         user = db.session.scalar(stmt)
