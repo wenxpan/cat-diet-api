@@ -6,6 +6,7 @@ from models.note import Note, NoteSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from blueprints.auth_bp import admin_required, admin_or_owner_required
 from flask import request
+from marshmallow.validate import ValidationError
 
 
 cats_bp = Blueprint('cat', __name__, url_prefix='/cats')
@@ -54,9 +55,12 @@ def update_cat(cat_id):
     if cat:
         admin_or_owner_required(owner_id)
         cat_info = CatSchema().load(request.json, partial=True)
-        cat.name = cat_info.get('name', cat.name)
         cat.year_born = cat_info.get('year_born', cat.year_born)
         cat.year_adopted = cat_info.get('year_adopted', cat.year_adopted)
+        # check when marshmallow is unable to validate with partial input
+        if cat.year_born > cat.year_adopted:
+            return {'error': 'year_adopted must be the same or later than year_born'}, 400
+        cat.name = cat_info.get('name', cat.name)
         cat.breed = cat_info.get('breed', cat.breed)
         db.session.commit()
         return CatSchema(exclude=['owner_id', 'notes']).dump(cat)
