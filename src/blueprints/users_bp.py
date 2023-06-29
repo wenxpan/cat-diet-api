@@ -1,6 +1,7 @@
 from flask import Blueprint
 from init import db, bcrypt
-from models.user import User, UserSchema, get_user_statistics
+from models.user import User, UserSchema
+from analyse import get_user_statistics
 from flask_jwt_extended import jwt_required
 from blueprints.auth_bp import admin_required, admin_or_owner_required
 from flask import request
