@@ -7,7 +7,7 @@ from models.note import Note
 from utils.authorise import admin_or_owner_required
 
 
-
+# create blueprint for the /cats endpoint
 cats_bp = Blueprint('cat', __name__, url_prefix='/cats')
 
 
@@ -15,7 +15,7 @@ cats_bp = Blueprint('cat', __name__, url_prefix='/cats')
 def all_cats():
     # returns a list of cats and their owner name
 
-    # build query: select all foods from foods table
+    # build query: select all cats from cats table
     stmt = db.select(Cat)
     # execute query and return scalars result
     cats = db.session.scalars(stmt)
@@ -138,11 +138,13 @@ def get_cat_food(cat_id):
     stmt = db.select(Food, db.func.count(), db.func.sum(
         Note.rating)).select_from(Note).join(Food.notes).filter(
         Note.cat_id == cat_id).group_by(Food.id).order_by(db.func.sum(Note.rating).desc())
+    
     # execute the query, get an iterable result of all the foods related to the selected cat, 
     # and the total notes reviewed, total rating scores for each related food, 
     # ranked from most to least positive reviewed
     statistics_info = db.session.execute(stmt)
     result = []
+
     # iterate through info and add statistics to result
     for food, count, rating in statistics_info:
         result.append({

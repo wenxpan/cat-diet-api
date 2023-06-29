@@ -1,22 +1,26 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from init import db
+from flask_jwt_extended import jwt_required
+from datetime import date
 from models.note import Note, NoteSchema
 from models.cat import Cat
 from models.food import Food
-from flask_jwt_extended import jwt_required
 from utils.authorise import admin_or_owner_required
-from flask import request
-from datetime import date
 
-
+# create blueprint for the /notes endpoint
 notes_bp = Blueprint('notes', __name__, url_prefix='/notes')
 
 
 @notes_bp.route('/')
 def all_notes():
     # returns a list of notes, each with its related cat and food information
+    
+    # build query: select all notes from notes table
     stmt = db.select(Note)
+    # execute query and return scalars result
     notes = db.session.scalars(stmt)
+
+    # return serialized result
     return NoteSchema(many=True, exclude=['cat_id', 'food_id']).dump(notes)
 
 
@@ -25,25 +29,36 @@ def all_notes():
 def create_note():
     # create a new note in the database
 
+    # load data using schema to sanitize and validate input
     note_info = NoteSchema().load(request.json)
-    stmt = db.select(Cat).filter_by(
-        id=note_info.get('cat_id'))
-    cat = db.session.scalar(stmt)
+
+    # select cat and food with matching id
+    cat = db.session.scalar(db.select(Cat).filter_by(
+        id=note_info.get('cat_id')))
     food = db.session.scalar(
         db.select(Food).filter_by(id=note_info.get('food_id')))
+    # if cat or food or both do not exist, return erro
     if not cat or not food:
-        return {'error': 'Cat or food not found'}, 404
+        return {'error': 'Cat or food not found'}, 400
     else:
+        # check if the token identity is the cat owner
         admin_or_owner_required(cat.owner_id)
+
+        # create a new Note model instance
         note = Note(
-            message=note_info.get('message'),
-            date_recorded=date.today(),
-            rating=note_info['rating'],
+            rating=note_info.get('rating'), # optional
+            message=note_info.get('message'), # optional
             cat_id=note_info['cat_id'],
-            food_id=note_info['food_id']
+            food_id=note_info['food_id'],
+            # if date_recorded is empty, set the default to today
+            date_recorded=note_info.get('date_recorded', date.today())
         )
+
+        # add and commit note to db
         db.session.add(note)
         db.session.commit()
+
+        # return serialized result
         return NoteSchema(exclude=['cat_id', 'food_id']).dump(note), 201
 
 
