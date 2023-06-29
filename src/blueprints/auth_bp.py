@@ -2,7 +2,7 @@ from flask import Blueprint, abort
 from init import db, bcrypt
 from flask import request
 from models.user import User, UserSchema
-from analyse import get_user_statistics
+from utils.analyse import get_user_statistics
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import create_access_token, get_jwt_identity
 from datetime import timedelta

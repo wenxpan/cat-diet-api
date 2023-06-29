@@ -3,6 +3,7 @@ from models.cat import Cat
 from models.food import Food
 from models.note import Note
 
+
 def get_user_statistics(user_id):
     cats_stmt = db.select(db.func.count()).select_from(
         Cat).filter(Cat.owner_id == user_id)
@@ -23,3 +24,5 @@ def get_user_statistics(user_id):
         'total_notes': total_notes,
         'total_foods_reviewed': total_foods
     }
+
+
