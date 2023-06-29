@@ -4,9 +4,11 @@ from models.food import Food, FoodSchema
 from models.ingredient import Ingredient, IngredientSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from utils.authorise import admin_required
+from utils.set_ingredient import set_ingredient
 from flask import request
 from sqlalchemy.exc import IntegrityError
 
+# create blueprint for the /foods endpoint
 foods_bp = Blueprint('food', __name__, url_prefix='/foods')
 
 
@@ -14,8 +16,12 @@ foods_bp = Blueprint('food', __name__, url_prefix='/foods')
 def all_foods():
     # returns a list of foods with their ingredients and related notes
 
+    # build query: select all foods from foods table
     stmt = db.select(Food)
+    # execute query and return scalars result
     foods = db.session.scalars(stmt)
+
+    # return serialized result
     return FoodSchema(many=True).dump(foods)
 
 
@@ -25,46 +31,42 @@ def create_food():
     # creates a new food in the database
 
     try:
-        print('processed1')
+        # load data using schema to sanitize and validate input
         food_info = FoodSchema().load(request.json, partial=True)
-        print('processed2')
+
+        # create a new Food model instance
         food = Food(
             name=food_info['name'],
-            category=food_info.get('category'),
-            brand=food_info.get('brand'),
-            created_by=get_jwt_identity(),
-            last_modified_by=get_jwt_identity()
+            brand=food_info.get('brand'), # optional
+            category=food_info.get('category'), # optional
         )
-        ingredients_info = food_info.get('ingredients')
-        if ingredients_info:
-            for ingredient in ingredients_info:
-                if ingredient.get('id'):
-                    stmt = db.select(Ingredient).filter_by(
-                        id=ingredient['id'])
-                    ingredient_from_id = db.session.scalar(stmt)
-                    if not ingredient_from_id:
-                        return {'error': 'ingredient id not found'}, 400
-                    elif ingredient_from_id in food.ingredients:
-                        pass
-                    else:
-                        food.ingredients.append(ingredient_from_id)
+
+        food.ingredients = set_ingredient(food, food_info.get('ingredients'))
+
+        # add and commit food to db
         db.session.add(food)
         db.session.commit()
+
+        # return serialized result
         return FoodSchema().dump(food), 201
     except IntegrityError:
-        return {'error': 'Food name already exists'}
+        # if food name is not unique, return error
+        return {'error': 'Food name already exists'}, 409
 
 
 @foods_bp.route('/<int:food_id>')
 def get_one_food(food_id):
     # returns food of the selected id
 
-
+    # build query: select food with matching id
     stmt = db.select(Food).filter_by(id=food_id)
+    # execute query and return a scalar result
     food = db.session.scalar(stmt)
     if food:
+        # return seraialized result
         return FoodSchema().dump(food)
     else:
+        # if no food is retrieved from db, return error
         return {'error': 'Food not found'}, 404
 
 
@@ -73,34 +75,32 @@ def get_one_food(food_id):
 def update_food(food_id):
     # updates food information of the selected id
 
+    # admin access only
     admin_required()
+
+    # build query: select food with matching id
     stmt = db.select(Food).filter_by(id=food_id)
+    # execute query and return a scalar result
     food = db.session.scalar(stmt)
-    food_info = FoodSchema().load(request.json, partial=True)
+
     if food:
+        # load data using schema to sanitize and validate input
+        food_info = FoodSchema().load(request.json, partial=True)
+
+        # all fields can be optional, so get methods are used
         food.name = food_info.get('name', food.name)
         food.category = food_info.get('category', food.category)
         food.brand = food_info.get('brand', food.brand)
-        food.last_modified_by = get_jwt_identity()
 
-        # make it dry
-        ingredients_info = food_info.get('ingredients')
-        if ingredients_info:
-            food.ingredients = []
-            for ingredient in ingredients_info:
-                if ingredient.get('id'):
-                    stmt = db.select(Ingredient).filter_by(
-                        id=ingredient['id'])
-                    ingredient_from_id = db.session.scalar(stmt)
-                    if not ingredient_from_id:
-                        return {'error': f"ingredient id {ingredient['id']} not found"}, 400
-                    elif ingredient_from_id in food.ingredients:
-                        pass
-                    else:
-                        food.ingredients.append(ingredient_from_id)
+        food.ingredients = set_ingredient(food, food_info.get('ingredients'))
+
+        # commit changes to db
         db.session.commit()
+
+        # return update food
         return FoodSchema(exclude=['notes']).dump(food)
     else:
+        # if no food is retrieved from db, return error
         return {'error': 'Food not found'}, 404
 
 
@@ -109,12 +109,21 @@ def update_food(food_id):
 def delete_food(food_id):
     # allows admin to delete a food from database
 
+    # admin access only
     admin_required()
+
+    # build query: select food with matching id
     stmt = db.select(Food).filter_by(id=food_id)
+    # execute query and return a scalar result
     food = db.session.scalar(stmt)
+
     if food:
+        # delete food instance and commit changes to db
         db.session.delete(food)
         db.session.commit()
-        return {}, 200
+
+        # return success message
+        return {'message': f'Food {food_id} and related notes deleted'}, 200
     else:
+        # if no food is retrieved from db, return error
         return {'error': 'Food not found'}, 404

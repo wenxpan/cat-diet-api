@@ -26,6 +26,10 @@ def create_app():
     @app.errorhandler(401)
     def unauthorized(err):
         return {'error': str(err)}, 401
+    
+    @app.errorhandler(400)
+    def bad_request(err):
+        return {'error': str(err)}, 400
 
     @app.errorhandler(ValidationError)
     def validation_error(err):
