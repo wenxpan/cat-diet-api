@@ -14,23 +14,33 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('register', methods=['POST'])
 def register():
+    # creates a user in the database
+
     try:
+        # load and sanitize data using marshmallow schema
         user_info = UserSchema().load(request.json)
+
+        # create a new User model instance, hash the password using bcrypt
         user = User(username=user_info['username'],
                     email=user_info['email'],
                     password=bcrypt.generate_password_hash(
             user_info['password']).decode('utf-8'))
 
+        # add and commit user to db
         db.session.add(user)
         db.session.commit()
 
+        # return serialized user instance, exclude sensitive info (password)
         return UserSchema(exclude=['password']).dump(user), 201
     except IntegrityError:
+        # if email address is not unique, return error
         return {'error': 'Email already in use'}, 409
 
 
 @auth_bp.route('login', methods=['POST'])
 def login():
+    # allows user to login and receive a token for authentication and authorization
+
     try:
         stmt = db.select(User).filter_by(email=request.json['email'])
         user = db.session.scalar(stmt)

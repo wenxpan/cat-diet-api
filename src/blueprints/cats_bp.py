@@ -14,6 +14,8 @@ cats_bp = Blueprint('cat', __name__, url_prefix='/cats')
 
 @cats_bp.route('/')
 def all_cats():
+    # returns a list of cats and their owner name
+
     stmt = db.select(Cat)
     cats = db.session.scalars(stmt)
     return CatSchema(many=True, exclude=['owner_id', 'notes']).dump(cats)
@@ -22,6 +24,7 @@ def all_cats():
 @cats_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_cat():
+    # create a new cat in the database
     user_id = get_jwt_identity()
     cat_info = CatSchema().load(request.json, partial=True)
     cat = Cat(
@@ -38,6 +41,8 @@ def create_cat():
 
 @cats_bp.route('/<int:cat_id>')
 def get_one_cat(cat_id):
+    # returns cat of the selected id and their owner and notes
+
     stmt = db.select(Cat).filter_by(id=cat_id)
     cat = db.session.scalar(stmt)
     if cat:
@@ -49,6 +54,8 @@ def get_one_cat(cat_id):
 @cats_bp.route('/<int:cat_id>', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_cat(cat_id):
+    # update cat information of the selected id
+
     stmt = db.select(Cat).filter_by(id=cat_id)
     cat = db.session.scalar(stmt)
     owner_id = cat.owner.id
@@ -58,7 +65,7 @@ def update_cat(cat_id):
         cat.year_born = cat_info.get('year_born', cat.year_born)
         cat.year_adopted = cat_info.get('year_adopted', cat.year_adopted)
         # check when marshmallow is unable to validate with partial input
-        if cat.year_born > cat.year_adopted:
+        if (not (cat_info.get('year_born') and cat_info.get('year_adopted'))) and cat.year_born > cat.year_adopted:
             return {'error': 'year_adopted must be the same or later than year_born'}, 400
         cat.name = cat_info.get('name', cat.name)
         cat.breed = cat_info.get('breed', cat.breed)
@@ -71,6 +78,8 @@ def update_cat(cat_id):
 @cats_bp.route('/<int:cat_id>', methods=['DELETE'])
 @jwt_required()
 def delete_cat(cat_id):
+    # allows admin or owner to delete a cat from database
+
     stmt = db.select(Cat).filter_by(id=cat_id)
     cat = db.session.scalar(stmt)
     owner_id = cat.owner.id
@@ -86,6 +95,8 @@ def delete_cat(cat_id):
 @cats_bp.route('/<int:cat_id>/food')
 @jwt_required()
 def get_cat_food(cat_id):
+    # returns a list of foods eaten by the cat, with statistics on total notes and rating
+    
     stmt = db.select(Food, db.func.count(), db.func.sum(Note.rating)).select_from(Note).join(Food.notes).filter(Note.cat_id == cat_id).group_by(Food.id).order_by(db.func.sum(Note.rating).desc())
     total_notes = db.session.execute(stmt)
     result = []

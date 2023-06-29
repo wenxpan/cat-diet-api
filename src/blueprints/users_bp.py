@@ -14,6 +14,8 @@ users_bp = Blueprint('users', __name__, url_prefix='/users')
 @users_bp.route('/')
 @jwt_required()
 def all_users():
+    # returns a list of users
+
     admin_required()
     stmt = db.select(User)
     users = db.session.scalars(stmt)
@@ -23,6 +25,8 @@ def all_users():
 @users_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_user():
+    # allows admin to create a user or admin in the database
+
     admin_required()
     try:
         user_info = UserSchema().load(request.json)
@@ -43,6 +47,8 @@ def create_user():
 @users_bp.route('/<int:user_id>')
 @jwt_required()
 def get_one_user(user_id):
+    # returns information and statistics of the selected user
+
     stmt = db.select(User).filter_by(id=user_id)
     user = db.session.scalar(stmt)
     if user:
@@ -57,6 +63,8 @@ def get_one_user(user_id):
 @users_bp.route('/<int:user_id>', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_user(user_id):
+    # update user information of the selected id (cannot update admin status)
+
     try:
         stmt = db.select(User).filter_by(id=user_id)
         user = db.session.scalar(stmt)
@@ -79,6 +87,8 @@ def update_user(user_id):
 @users_bp.route('/<int:user_id>', methods=['DELETE'])
 @jwt_required()
 def delete_user(user_id):
+    # allows admin to delete a user from database
+    
     admin_required()
     stmt = db.select(User).filter_by(id=user_id)
     user = db.session.scalar(stmt)

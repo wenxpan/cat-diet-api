@@ -12,6 +12,8 @@ foods_bp = Blueprint('food', __name__, url_prefix='/foods')
 
 @foods_bp.route('/')
 def all_foods():
+    # returns a list of foods with their ingredients and related notes
+
     stmt = db.select(Food)
     foods = db.session.scalars(stmt)
     return FoodSchema(many=True).dump(foods)
@@ -20,6 +22,8 @@ def all_foods():
 @foods_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_food():
+    # creates a new food in the database
+
     try:
         print('processed1')
         food_info = FoodSchema().load(request.json, partial=True)
@@ -53,6 +57,9 @@ def create_food():
 
 @foods_bp.route('/<int:food_id>')
 def get_one_food(food_id):
+    # returns food of the selected id
+
+
     stmt = db.select(Food).filter_by(id=food_id)
     food = db.session.scalar(stmt)
     if food:
@@ -64,6 +71,8 @@ def get_one_food(food_id):
 @foods_bp.route('/<int:food_id>', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_food(food_id):
+    # updates food information of the selected id
+
     admin_required()
     stmt = db.select(Food).filter_by(id=food_id)
     food = db.session.scalar(stmt)
@@ -98,6 +107,8 @@ def update_food(food_id):
 @foods_bp.route('/<int:food_id>', methods=['DELETE'])
 @jwt_required()
 def delete_food(food_id):
+    # allows admin to delete a food from database
+    
     admin_required()
     stmt = db.select(Food).filter_by(id=food_id)
     food = db.session.scalar(stmt)

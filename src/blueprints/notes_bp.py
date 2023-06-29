@@ -14,6 +14,7 @@ notes_bp = Blueprint('notes', __name__, url_prefix='/notes')
 
 @notes_bp.route('/')
 def all_notes():
+    # returns a list of notes, each with its related cat and food information
     stmt = db.select(Note)
     notes = db.session.scalars(stmt)
     return NoteSchema(many=True, exclude=['cat_id', 'food_id']).dump(notes)
@@ -22,6 +23,8 @@ def all_notes():
 @notes_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_note():
+    # create a new note in the database
+
     note_info = NoteSchema().load(request.json)
     stmt = db.select(Cat).filter_by(
         id=note_info.get('cat_id'))
@@ -46,6 +49,8 @@ def create_note():
 
 @notes_bp.route('/<int:note_id>')
 def get_one_note(note_id):
+    # returns note of the selected id and the related cat and food information
+
     stmt = db.select(Note).filter_by(id=note_id)
     note = db.session.scalar(stmt)
     if note:
@@ -57,6 +62,8 @@ def get_one_note(note_id):
 @notes_bp.route('/<int:note_id>', methods=['PUT', 'PATCH'])
 @jwt_required()
 def update_note(note_id):
+    # update note information of the selected id
+
     note_info = NoteSchema().load(request.json, partial=True)
 
     stmt = db.select(Note).filter_by(id=note_id)
@@ -95,6 +102,8 @@ def update_note(note_id):
 @notes_bp.route('/<int:note_id>', methods=['DELETE'])
 @jwt_required()
 def delete_note(note_id):
+    # allows admin or owner to delete a note from database
+    
     stmt = db.select(Note).filter_by(id=note_id)
     note = db.session.scalar(stmt)
     if note:
