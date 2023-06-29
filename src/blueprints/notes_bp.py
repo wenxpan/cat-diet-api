@@ -34,7 +34,7 @@ def create_note():
         admin_or_owner_required(cat.owner_id)
         note = Note(
             message=note_info.get('message'),
-            date_created=date.today(),
+            date_recorded=date.today(),
             rating=note_info['rating'],
             cat_id=note_info['cat_id'],
             food_id=note_info['food_id']
@@ -85,6 +85,7 @@ def update_note(note_id):
             note.rating = note_info.get('rating', note.rating)
             note.cat_id = note_info.get('cat_id', note.cat_id)
             note.food_id = note_info.get('food_id', note.food_id)
+            note.date_recorded = note_info.get('date_recorded', note.date_recorded)
             db.session.commit()
             return NoteSchema(exclude=['cat_id', 'food_id']).dump(note)
     else:

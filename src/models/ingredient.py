@@ -49,6 +49,7 @@ class IngredientSchema(ma.Schema):
 
     @validates_schema()
     def validate_category(self, data, **kwargs):
+        # check that input category belongs to one of the set types
         check_input_category(data, VALID_CATEGORIES)
 
     class Meta:
