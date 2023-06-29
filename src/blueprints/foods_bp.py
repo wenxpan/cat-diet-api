@@ -1,12 +1,10 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from init import db
+from flask_jwt_extended import jwt_required
+from sqlalchemy.exc import IntegrityError
 from models.food import Food, FoodSchema
-from models.ingredient import Ingredient, IngredientSchema
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from utils.authorise import admin_required
 from utils.set_ingredient import set_ingredient
-from flask import request
-from sqlalchemy.exc import IntegrityError
 
 # create blueprint for the /foods endpoint
 foods_bp = Blueprint('food', __name__, url_prefix='/foods')
@@ -97,7 +95,7 @@ def update_food(food_id):
         # commit changes to db
         db.session.commit()
 
-        # return update food
+        # return updated food
         return FoodSchema(exclude=['notes']).dump(food)
     else:
         # if no food is retrieved from db, return error
