@@ -90,7 +90,7 @@ def update_ingredient(ingredient_id):
         db.session.commit()
 
         # return updated ingredients
-        return IngredientSchema(exclude=['food']).dump(ingredient)
+        return IngredientSchema(exclude=['foods']).dump(ingredient)
     else:
         # if no ingredient is retrieved from db, return error
         return {'error': 'Ingredient not found'}, 404

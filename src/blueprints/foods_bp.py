@@ -30,7 +30,7 @@ def create_food():
 
     try:
         # load data using schema to sanitize and validate input
-        food_info = FoodSchema().load(request.json, partial=True)
+        food_info = FoodSchema().load(request.json)
 
         # create a new Food model instance
         food = Food(
@@ -82,21 +82,25 @@ def update_food(food_id):
     food = db.session.scalar(stmt)
 
     if food:
-        # load data using schema to sanitize and validate input
-        food_info = FoodSchema().load(request.json, partial=True)
+        try:
+            # load data using schema to sanitize and validate input
+            food_info = FoodSchema().load(request.json, partial=True)
 
-        # update fields; all fields can be optional, so get methods are used
-        food.name = food_info.get('name', food.name)
-        food.category = food_info.get('category', food.category)
-        food.brand = food_info.get('brand', food.brand)
+            # update fields; all fields can be optional, so get methods are used
+            food.name = food_info.get('name', food.name)
+            food.category = food_info.get('category', food.category)
+            food.brand = food_info.get('brand', food.brand)
 
-        food.ingredients = set_ingredient(food, food_info.get('ingredients'))
+            food.ingredients = set_ingredient(food, food_info.get('ingredients'))
 
-        # commit changes to db
-        db.session.commit()
+            # commit changes to db
+            db.session.commit()
 
-        # return updated food
-        return FoodSchema(exclude=['notes']).dump(food)
+            # return updated food
+            return FoodSchema(exclude=['notes']).dump(food)
+        except IntegrityError:
+            # if food name is not unique, return error
+            return {'error': 'Food name already exists'}, 409
     else:
         # if no food is retrieved from db, return error
         return {'error': 'Food not found'}, 404

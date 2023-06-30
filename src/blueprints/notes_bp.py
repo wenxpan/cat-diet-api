@@ -33,12 +33,15 @@ def create_note():
     # load data using schema to sanitize and validate input
     note_info = NoteSchema().load(request.json)
 
-    # select cat and food with matching id
-    cat = db.session.scalar(db.select(Cat).filter_by(
-        id=note_info.get('cat_id')))
-    food = db.session.scalar(
-        db.select(Food).filter_by(id=note_info.get('food_id')))
-    # if cat or food or both do not exist, return erro
+    # build query: select cat with matching id
+    cat_stmt = db.select(Cat).filter_by(id=note_info.get('cat_id'))
+    # execute query and return scalar result
+    cat = db.session.scalar(cat_stmt)
+    # build query: select food with matching id
+    food_stmt = db.select(Food).filter_by(id=note_info.get('food_id'))
+    # execute query and return scalar result
+    food = db.session.scalar(food_stmt)
+    # if cat or food or both do not exist, return error
     if not cat or not food:
         return {'error': 'Cat or food not found'}, 400
     else:

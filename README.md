@@ -4,6 +4,7 @@
 
 - [Github repo](https://github.com/wenxuan-pan/WenxuanPan_T2A2)
 - [Trello Board](https://trello.com/b/IJJ0hY8f/t2a2-implementation-plan)
+- [API Documentation](https://documenter.getpostman.com/view/28027782/2s93zB5MTY)
 
 ## Installation and setup
 
@@ -73,6 +74,8 @@ Scenarios:
 ## Functionalities and benefits of an ORM (R4)
 
 ## API endpoints (R5)
+
+
 
 ### Auth routes
 

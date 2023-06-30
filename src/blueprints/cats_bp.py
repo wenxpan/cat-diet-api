@@ -128,7 +128,6 @@ def delete_cat(cat_id):
 
 
 @cats_bp.route('/<int:cat_id>/food')
-@jwt_required()
 def get_cat_food(cat_id):
     # returns a list of foods tried by the cat, with statistics on total notes and rating
     
