@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from init import db
 from flask_jwt_extended import jwt_required
+from sqlalchemy.exc import IntegrityError
 from datetime import date
 from models.note import Note, NoteSchema
 from models.cat import Cat
@@ -66,11 +67,15 @@ def create_note():
 def get_one_note(note_id):
     # returns note of the selected id and the related cat and food information
 
+    # build query: select note with matching id
     stmt = db.select(Note).filter_by(id=note_id)
+    # execute query and return a scalar result
     note = db.session.scalar(stmt)
     if note:
+        # return seraialized result
         return NoteSchema().dump(note)
     else:
+        # if no note is retrieved from db, return error
         return {'error': 'Note not found'}, 404
 
 
@@ -79,38 +84,59 @@ def get_one_note(note_id):
 def update_note(note_id):
     # update note information of the selected id
 
-    note_info = NoteSchema().load(request.json, partial=True)
-
+    # build query: select note with matching id
     stmt = db.select(Note).filter_by(id=note_id)
+    # execute query and return a scalar result
     note = db.session.scalar(stmt)
 
     if note:
+        # check if the token user is admin or cat owner (i.e. the one who created note)
         admin_or_owner_required(note.cat.owner_id)
-        # make this part dry
+
+        # load data using schema to sanitize and validate input
+        note_info = NoteSchema().load(request.json, partial=True)
+
+        # if cat id is to be updated, check the cat owner stays the same
         if note_info.get('cat_id'):
-            stmt = db.select(Cat).filter_by(
-                id=note_info.get('cat_id'))
-            updated_cat = db.session.scalar(stmt)
-            if updated_cat:
-                admin_or_owner_required(updated_cat.owner_id)
+
+            # build query: select owner_id column from table cats
+            # with cat's id matching updated cat_id in the request body
+            new_stmt = db.select(Cat.owner_id).filter_by(id=note_info.get('cat_id'))
+            # execute query and return a scalar result (integer)
+            new_cat_owner = db.session.scalar(new_stmt)
+
+            # if cat owner not found (i.e. cat does not exist), return error
+            if not new_cat_owner:
+                return {'error': 'Invalid cat_id: Cat not found'}, 400
             else:
-                return {'error': 'Cat not found'}, 404
+                # build query: select owner_id column from table cats 
+                # with cat's id matching the cat_id in the original note
+                org_stmt = db.select(Cat.owner_id).filter_by(id=note.cat.id)
+                # execute query and return a scalar result (integer)
+                original_cat_owner = db.session.scalar(org_stmt)
 
-        elif note_info.get('food_id'):
-            stmt = db.select(Food).filter_by(id=note_info.get('food_id'))
-            updated_food = db.session.scalar(stmt)
-            if not updated_food:
-                return {'error': 'Food not found'}, 404
+                # check if the cat owner is the same, return error if not
+                if original_cat_owner != new_cat_owner:
+                    return {'error': 'The user is not the owner of the cat'}, 400
 
-        else:
+        # update note
+        try:
             note.message = note_info.get('message', note.message)
             note.rating = note_info.get('rating', note.rating)
             note.cat_id = note_info.get('cat_id', note.cat_id)
             note.food_id = note_info.get('food_id', note.food_id)
             note.date_recorded = note_info.get('date_recorded', note.date_recorded)
+            
+            # commit changes to db
             db.session.commit()
-            return NoteSchema(exclude=['cat_id', 'food_id']).dump(note)
+        except IntegrityError:
+            # return error if food_id not found in db
+            return {'error': 'Invalid food_id: Food not found'}, 400
+        
+        # return updated food
+        return NoteSchema(exclude=['cat_id', 'food_id']).dump(note)
     else:
+        # if no note is retrieved from db, return error
         return {'error': 'Note not found'}, 404
 
 
@@ -119,13 +145,20 @@ def update_note(note_id):
 def delete_note(note_id):
     # allows admin or owner to delete a note from database
     
+    # build query: select note with matching id
     stmt = db.select(Note).filter_by(id=note_id)
+    # execute query and return a scalar result
     note = db.session.scalar(stmt)
     if note:
-        owner_id = note.cat.owner.id
-        admin_or_owner_required(owner_id)
+
+        # check if the token user is admin or cat owner
+        admin_or_owner_required(note.cat.owner.id)
+
+        # delete note instance and commit changes to db
         db.session.delete(note)
         db.session.commit()
-        return {}, 200
+
+        # return success message
+        return {'message': f'Note {note_id} deleted'}, 200
     else:
         return {'error': 'Note not found'}, 404
