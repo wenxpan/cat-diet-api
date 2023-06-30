@@ -4,6 +4,7 @@ from flask import abort
 
 def set_ingredient(food, ingredients_info):
     # check if input includes ingredients field
+    
     if ingredients_info:
         # reset ingredients
         food.ingredients = []
@@ -20,7 +21,7 @@ def set_ingredient(food, ingredients_info):
                 
                 # if no ingredient is retrieved, return error
                 if not ingredient_from_id:
-                    abort(400, description=f'ingredient id {ingredient["id"]} not found')
+                    abort(400, description=f'ingredient_id {ingredient["id"]} not found')
                 
                 # if ingredient is not yet in field, add to the field
                 elif ingredient_from_id not in food.ingredients:

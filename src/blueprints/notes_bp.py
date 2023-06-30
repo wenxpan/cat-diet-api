@@ -149,8 +149,8 @@ def delete_note(note_id):
     stmt = db.select(Note).filter_by(id=note_id)
     # execute query and return a scalar result
     note = db.session.scalar(stmt)
-    if note:
 
+    if note:
         # check if the token user is admin or cat owner
         admin_or_owner_required(note.cat.owner.id)
 
@@ -161,4 +161,5 @@ def delete_note(note_id):
         # return success message
         return {'message': f'Note {note_id} deleted'}, 200
     else:
+        # if no note is retrieved from db, return error
         return {'error': 'Note not found'}, 404

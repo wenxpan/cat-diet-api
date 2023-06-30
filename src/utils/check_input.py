@@ -1,6 +1,9 @@
 from marshmallow.validate import ValidationError
 
 def check_input_category(data, valid_categories):
+    # validate function that checks if the 'category' field in request body 
+    # belongs to one of the set categories
+
     # only validate when category is in the request body
     if data.get('category'):
         # check if input is in one of the defined categories, case insensitive
