@@ -92,6 +92,21 @@ Cats can have allergies or food intolerances, and it may take time for owners to
 
 ## Database system: benefits and drawbacks (R3)
 
+I have chosen PostgreSQL as the database management system, because of the following benefits:
+
+- It is a free and open source database management system.
+- It is good at handling large datasets effectively. It is ACID (Atomicity, Consistency, Isolation, Durability)compliant, which means it ensures the reliability and consistency of the stored data. This helps as the app will be potentially tracking and managing a large number of users, cats, foods, ingredients, and notes. The ability to maintain data integrity and handle complex relationships makes PostgreSQL a suitable choice.
+- It is a relational database, which provides a more structured and organized approach to store and manage data than a non-relational database. This structure aligns well with the entities in the app. The relational model allows for clear definition of entities and relationships between them, making it easier to establish and maintain data consistency.
+- PostgreSQL has an active community of developers and users and provides accessible documentation and support. Additionally, PostgreSQL integrates well with various programming languages and frameworks, including Python and Flask for this project using SQLAlchemy as the ORM.
+
+There are some drawbacks to be considered:
+
+- As a relational database system, it may have limitations when it comes to storing data with varying structures. Adding new attributes to a record often requires adding a new column to the entire table, which can be less flexible compared to non-relational databases. This drawback might be avoided with careful planning and design, ensuring that the schema reflects all the needed functionalities of the app, instead of users needing to add custom properties later on.
+- Data stored in PostgreSQL is not straightly compatible with objects in a programming language. This is different to a non-relational database which the data objects are usually in JSON format and can be stored directly in it. In this project, the issue is solved using marshmallow, a serialisation and deserialisation tool that helps convert data to formatted JSON result; it also has the adds-on benefit to validate and sanitize input data.
+- In terms of reading performance, PostgreSQL might not be as good as other systems such as MySQL. This is because it creates a new system process for each user connected to the database, [allocating a significant amount of memory (approximately 10 MB)](https://aws.amazon.com/compare/the-difference-between-mysql-vs-postgresql) for each connection, whereas MySQL utilizes a single process to handle multiple users, resulting in better performance for applications that primarily involve reading and displaying data to users. However, considering that PostgreSQL still performs better in frequent data updates and concurrent write operations, it remains a suitable option for this project.
+
+Overall, PostgreSQL is well-suited for the content and requirements of the app. It effectively manages the relationships between various entities including users, cats, foods, ingredients, and notes. The relational database structure allows for clear definition of these entities and their relationships, enabling efficient querying and retrieval of related data. For example, the relationships between cats and their owners (users) can be easily established and tracked using foreign key constraints. The ability to store and retrieve complex relationships between entities makes PostgreSQL a suitable choice for this app's content despite its limitations.
+
 ## Functionalities and benefits of an ORM (R4)
 
 ## API endpoints (R5)
