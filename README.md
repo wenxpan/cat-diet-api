@@ -141,9 +141,14 @@ Visit links below to see full documentation:
 
 ## ERD and database relations (R6/R9)
 
+### ERD
 ![ERD for Cat Diet API](./docs/erd.png)
 
 <!-- R9 (database terminology) - at the lower level, the same relationships at the database level; tables, foreign key, primary key, use database language to talk about how it works, how the relationships work -->
+
+### Table - users
+
+- 
 
 ## Third party services (R7)
 

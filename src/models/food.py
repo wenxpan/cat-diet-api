@@ -1,7 +1,7 @@
 from init import db, ma
 from marshmallow import fields, validates_schema
 from marshmallow.validate import Length
-from models.ingredient import food_ingredient
+from models.ingredient import food_ingredients
 from utils.check_input import check_input_category
 
 # set up a constant outlining all the valid categories of foods
@@ -23,7 +23,7 @@ class Food(db.Model):
     # establish many-to-many relationship using join table
     # one food can have many ingredients, one ingredient can make many foods
     ingredients = db.relationship(
-        'Ingredient', secondary=food_ingredient, back_populates='foods')
+        'Ingredient', secondary=food_ingredients, back_populates='foods')
 
     # establish one-to-many relationship: one food can have many notes
     # notes will be removed when the food is deleted

@@ -10,7 +10,7 @@ VALID_CATEGORIES = ['Meat', 'Seafood', 'Derivatives', 'Grains', 'Vegetables', 'O
 
 # create join table for many-to-many relationship between foods and ingredients
 # food_id and ingredient_id will be primary keys with no additional attributes
-food_ingredient = db.Table('food_ingredient',
+food_ingredients = db.Table('food_ingredients',
                            db.Column('food_id', db.Integer,
                                      db.ForeignKey('foods.id', ondelete='CASCADE'), primary_key=True),
                            db.Column('ingredient_id', db.Integer, db.ForeignKey('ingredients.id', ondelete='CASCADE'), primary_key=True))
@@ -29,7 +29,7 @@ class Ingredient(db.Model):
     # establish many-to-many relationship using join table
     # one ingredient can make many foods, one food can have many ingredients
     foods = db.relationship(
-        'Food', secondary=food_ingredient, back_populates='ingredients')
+        'Food', secondary=food_ingredients, back_populates='ingredients')
 
 
 class IngredientSchema(ma.Schema):
