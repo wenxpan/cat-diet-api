@@ -1,4 +1,4 @@
-# T2A2
+# T2A2 - Cat Diet API
 
 ## Links
 
@@ -60,14 +60,35 @@ flask run
 
 The server will run on `http://127.0.0.1:5000`.
 
-## Problem identification (R1)
+## Problem identification and justification (R1/R2)
 
-## Problem justification (R2)
+The REST Cat Diet API aims to assist cat owners in tracking and managing their cat's diet and food preferences, as well as monitoring any changes over time, in order to keep a well-balanced diet for their cats.
 
-Scenarios:
+In particular, the app addresses the following issues:
 
-- when your cat is on diet, need to keep track of the treats
-- check which one is the cat's favourite food, least favourite food
+### Fussy eating
+
+Many cats are known to be picky eaters, and it can be challenging for cat owners to identify their cat's favourite and least favourite foods. The app provides a centralised platform for cat owners to record and track their cat's preferences, making it easier for them to choose suitable food options.
+
+### Health and nutrition
+
+The [Code of Practice for the Private Keeping of Cats](https://agriculture.vic.gov.au/livestock-and-animals/animal-welfare-victoria/domestic-animals-act/codes-of-practice/code-of-practice-for-the-private-keeping-of-cats#h2-6) sets the following minimum standards regarding nutrition:
+
+> Cats must be fed a diet that provides proper and sufficient food to maintain good health and meet their physiological needs.
+>
+> Cats are carnivores and must not be fed a purely vegetarian diet.
+>
+> Cats must not be fed a diet consisting purely of fresh meat (including fish).
+
+To meet these standards, owners can use this app to regularly monitor the food type and ingredients to ensure that their cat receives the necessary nutrients and avoid potential health issues caused by an imbalanced diet.
+
+### Avoiding overfeeding treats
+
+Treats are given as rewards for cats, but excessive consumption can lead to weight gain and health issues, and owners might not always realise that they are overfeeding. The app allows cat owners to keep track of treat consumption and review on a regular basis to prevent overfeeding.
+
+### Identifying allergies or intolerances
+
+Cats can have allergies or food intolerances, and it may take time for owners to realised and identify specific ingredients or brands that cause adverse reactions in their cats. The app allows users to note down their cat's any resistance or adverse reactions to certain foods or ingredients, which can be helpful during vet consultation and finding solutions. This will also help cat owners remember and avoid purchasing similar products in the future.
 
 ## Database system: benefits and drawbacks (R3)
 
@@ -83,9 +104,11 @@ Visit links below to see full documentation:
 - [API documentation - Postman version](https://documenter.getpostman.com/view/28027782/2s93zB5MTY#intro)
 - [API documentation - Markdown version](/docs/endpoints.md)
 
-## ERD (R6)
+## ERD and database relations (R6/R9)
 
 ![ERD for Cat Diet API](./docs/erd.png)
+
+<!-- R9 (database terminology) - at the lower level, the same relationships at the database level; tables, foreign key, primary key, use database language to talk about how it works, how the relationships work -->
 
 ## Third party services (R7)
 
@@ -123,7 +146,7 @@ Describe your projects models in terms of the relationships they have with each 
 
 There are 5 models created in this project: User, Cat, Food, Ingredient, Note. There is an additional join table food_ingredient that reflects the many-to-many relationship between Food and Ingredient.
 
-### User Model
+### User model
 
 ```python
 class User(db.Model):
@@ -163,13 +186,221 @@ Returned JSON result:
         }
     ]
 }
-
-
 ```
 
-## Database relations (R9)
+The nested list of cats is created through marshmallow schema:
 
-<!-- R9 (database terminology) - at the lower level, the same relationships at the database level; tables, foreign key, primary key, use database language to talk about how it works, how the relationships work -->
+```python
+cats = fields.List(fields.Nested('CatSchema', exclude=['owner_id', 'owner', 'notes']))
+```
+
+### Cat model
+
+```python
+class Cat(db.Model):
+    __tablename__ = 'cats'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    year_born = db.Column(db.Integer)
+    year_adopted = db.Column(db.Integer)
+    breed = db.Column(db.String(100))
+
+    owner_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'), nullable=False)
+    owner = db.relationship('User', back_populates='cats')
+
+    notes = db.relationship(
+        'Note', back_populates='cat', cascade='all, delete')
+```
+
+returned JSON result
+
+```JSON
+{
+    "id": 1,
+    "name": "Luna",
+    "breed": "Domestic Shorthair",
+    "year_born": 2020,
+    "year_adopted": 2021,
+    "owner": {
+        "username": "John"
+    },
+    "notes": []
+}
+```
+
+marshmallow schema
+
+```python
+owner = fields.Nested('UserSchema', only=[
+                      'username'])
+notes = fields.List(fields.Nested('NoteSchema', exclude=[
+    'cat', 'cat_id', 'food_id']))
+```
+
+### Food model
+
+```python
+class Food(db.Model):
+    __tablename__ = 'foods'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False, unique=True)
+    brand = db.Column(db.String(100))
+    category = db.Column(db.String(30))
+
+    ingredients = db.relationship(
+        'Ingredient', secondary=food_ingredient, back_populates='foods')
+
+    notes = db.relationship(
+        'Note', back_populates='food', cascade='all, delete')
+```
+
+returned JSON result
+
+```JSON
+{
+    "id": 1,
+    "name": "Tuna With Prawn Canned Adult Cat Food",
+    "brand": "Applaws",
+    "category": "Wet",
+    "ingredients": [
+        {
+            "id": 5,
+            "name": "Tuna",
+            "category": "Seafood"
+        },
+        {
+            "id": 6,
+            "name": "Prawn",
+            "category": "Seafood"
+        }
+    ],
+    "notes": []
+}
+```
+
+marshmallow schema
+
+```python
+ingredients = fields.List(fields.Nested(
+    'IngredientSchema', exclude=['foods']))
+notes = fields.List(fields.Nested('NoteSchema', exclude=[
+    'food_id', 'food', 'cat_id']))
+```
+
+### Ingredient model
+
+```python
+class Ingredient(db.Model):
+    __tablename__ = 'ingredients'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    category = db.Column(db.String(30))
+
+    foods = db.relationship(
+        'Food', secondary=food_ingredient, back_populates='ingredients')
+```
+
+returned JSON result
+
+```JSON
+{
+    "id": 1,
+    "name": "Chicken",
+    "category": "Meat",
+    "foods": [
+        {
+            "id": 2,
+            "name": "Chicken Wet Cat Food Cans",
+            "brand": "Ziwi",
+            "category": "Wet"
+        }
+    ]
+}
+```
+
+marshmallow schema:
+
+```python
+foods = fields.List(fields.Nested(
+    'FoodSchema', exclude=['notes', 'ingredients']))
+```
+
+#### food_ingredient join table
+
+```python
+food_ingredient = db.Table('food_ingredient',
+                           db.Column('food_id', db.Integer,
+                                     db.ForeignKey('foods.id', ondelete='CASCADE'), primary_key=True),
+                           db.Column('ingredient_id', db.Integer, db.ForeignKey('ingredients.id', ondelete='CASCADE'), primary_key=True))
+```
+
+### Note model
+
+```python
+class Note(db.Model):
+    __tablename__ = 'notes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String)
+    rating = db.Column(db.Integer, default=0)
+    date_recorded = db.Column(db.Date, default=date.today())
+
+    cat_id = db.Column(db.Integer, db.ForeignKey(
+        'cats.id', ondelete='CASCADE'), nullable=False)
+    cat = db.relationship('Cat', back_populates='notes')
+
+    food_id = db.Column(db.Integer, db.ForeignKey(
+        'foods.id', ondelete='CASCADE'), nullable=False)
+    food = db.relationship('Food', back_populates='notes')
+```
+
+returned JSON
+
+```JSON
+{
+    "id": 1,
+    "message": "Luna was ok with it, maybe will try a different one",
+    "rating": 0,
+    "date_recorded": "2023-06-24",
+    "cat": {
+        "id": 1,
+        "name": "Luna",
+        "breed": "Domestic Shorthair",
+        "owner": {
+            "username": "John"
+        }
+    },
+    "food": {
+        "id": 1,
+        "name": "Tuna With Prawn Canned Adult Cat Food",
+        "brand": "Applaws",
+        "category": "Wet",
+        "ingredients": [
+            {
+                "id": 5,
+                "name": "Tuna",
+                "category": "Seafood"
+            },
+            {
+                "id": 6,
+                "name": "Prawn",
+                "category": "Seafood"
+            }
+        ]
+    }
+}
+```
+
+marshmallow schema
+
+```python
+    cat = fields.Nested('CatSchema', only=['id', 'name', 'breed', 'owner'])
+    food = fields.Nested('FoodSchema', exclude=['notes'])
+```
 
 ## Project planning and implementation (R10)
 

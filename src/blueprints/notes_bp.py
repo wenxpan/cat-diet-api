@@ -76,7 +76,7 @@ def get_one_note(note_id):
     note = db.session.scalar(stmt)
     if note:
         # return seraialized result
-        return NoteSchema().dump(note)
+        return NoteSchema(exclude=['cat_id', 'food_id']).dump(note)
     else:
         # if no note is retrieved from db, return error
         return {'error': 'Note not found'}, 404

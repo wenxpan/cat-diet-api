@@ -2190,7 +2190,6 @@ Optional fields: None
   "message": "Luna was ok with it, maybe will try a different one",
   "rating": 0,
   "date_recorded": "2023-06-24",
-  "cat_id": 1,
   "cat": {
     "id": 1,
     "name": "Luna",
@@ -2199,7 +2198,6 @@ Optional fields: None
       "username": "John"
     }
   },
-  "food_id": 1,
   "food": {
     "id": 1,
     "name": "Tuna With Prawn Canned Adult Cat Food",
