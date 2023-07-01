@@ -43,10 +43,10 @@ source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
-- Rename `.env.sample` to `env`, and set the db connection string and JWT secret key:
+- Rename `.env.sample` to `.env`, and set the db connection string and JWT secret key:
 
 ```
-DATABASE_URL=postgresql+psycopg2://cat_diet_dev:admin123@localhost:5432/cat_diet
+DB_URI=postgresql+psycopg2://cat_diet_dev:admin123@localhost:5432/cat_diet
 JWT_SECRET_KEY=Your Secret Key
 ```
 
@@ -66,29 +66,21 @@ The REST Cat Diet API aims to assist cat owners in tracking and managing their c
 
 In particular, the app addresses the following issues:
 
-### Fussy eating
+- **Fussy eating:** Many cats are known to be picky eaters, and it can be challenging for cat owners to identify their cat's favourite and least favourite foods. The app provides a centralised platform for cat owners to record and track their cat's preferences, making it easier for them to choose suitable food options.
 
-Many cats are known to be picky eaters, and it can be challenging for cat owners to identify their cat's favourite and least favourite foods. The app provides a centralised platform for cat owners to record and track their cat's preferences, making it easier for them to choose suitable food options.
+- **Health and nutrition**: The [Code of Practice for the Private Keeping of Cats](https://agriculture.vic.gov.au/livestock-and-animals/animal-welfare-victoria/domestic-animals-act/codes-of-practice/code-of-practice-for-the-private-keeping-of-cats#h2-6) sets the following minimum standards regarding nutrition:
 
-### Health and nutrition
+  > Cats must be fed a diet that provides proper and sufficient food to maintain good health and meet their physiological needs.
+  >
+  > Cats are carnivores and must not be fed a purely vegetarian diet.
+  >
+  > Cats must not be fed a diet consisting purely of fresh meat (including fish).
 
-The [Code of Practice for the Private Keeping of Cats](https://agriculture.vic.gov.au/livestock-and-animals/animal-welfare-victoria/domestic-animals-act/codes-of-practice/code-of-practice-for-the-private-keeping-of-cats#h2-6) sets the following minimum standards regarding nutrition:
+  To meet these standards, owners can use this app to regularly monitor the food type and ingredients to ensure that their cat receives the necessary nutrients and avoid potential health issues caused by an imbalanced diet.
 
-> Cats must be fed a diet that provides proper and sufficient food to maintain good health and meet their physiological needs.
->
-> Cats are carnivores and must not be fed a purely vegetarian diet.
->
-> Cats must not be fed a diet consisting purely of fresh meat (including fish).
+- **Avoiding overfeeding treats:** Treats are given as rewards for cats, but excessive consumption can lead to weight gain and health issues, and owners might not always realise that they are overfeeding. The app allows cat owners to keep track of treat consumption and review on a regular basis to prevent overfeeding.
 
-To meet these standards, owners can use this app to regularly monitor the food type and ingredients to ensure that their cat receives the necessary nutrients and avoid potential health issues caused by an imbalanced diet.
-
-### Avoiding overfeeding treats
-
-Treats are given as rewards for cats, but excessive consumption can lead to weight gain and health issues, and owners might not always realise that they are overfeeding. The app allows cat owners to keep track of treat consumption and review on a regular basis to prevent overfeeding.
-
-### Identifying allergies or intolerances
-
-Cats can have allergies or food intolerances, and it may take time for owners to realised and identify specific ingredients or brands that cause adverse reactions in their cats. The app allows users to note down their cat's any resistance or adverse reactions to certain foods or ingredients, which can be helpful during vet consultation and finding solutions. This will also help cat owners remember and avoid purchasing similar products in the future.
+- **Identifying allergies or intolerances:** Cats can have allergies or food intolerances, and it may take time for owners to realised and identify specific ingredients or brands that cause adverse reactions in their cats. The app allows users to note down their cat's any resistance or adverse reactions to certain foods or ingredients, which can be helpful during vet consultation and finding solutions. This will also help cat owners remember and avoid purchasing similar products in the future.
 
 ## Database system: benefits and drawbacks (R3)
 
@@ -113,6 +105,27 @@ An Object Relational Mapper (ORM) plays a crucial role in connecting object-orie
 
 - Using SQLAlchemy as the ORM, the developer can interact the database using python instead of writing SQL queries directly. For example, writing `db.select(Cat)` in python will be converted by ORM to SQL query like `SELECT * FROM cats`. It helps abstracts away the complexities of SQL syntax to let developers [focus on high-level implementation](https://www.educative.io/answers/what-is-object-relational-mapping).
 - Using ORM can generate objects that map to database tables, providing an object-oriented approach to data manipulation. In this project, each entity (users, cats, foods etc.) corresponds to a model class, and the attributes of each class represent the fields of the tables.
+
+Example - User model defined using SQLAlchemy:
+
+```python
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15), nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
+    password = db.Column(db.String, nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    joined_since = db.Column(db.Date, default=date.today())
+
+    cats = db.relationship('Cat', back_populates='owner',
+                           cascade='all, delete')
+```
+
+users table generated in PostgreSQL:
+![users table](image.png)
+
 - ORM supports mapping relationships between classes/models to relationships between database tables using foreign keys. This feature is valuable for establishing relationships between entities in the app, such as the relationship between users and cats or between foods and ingredients. The ORM simplifies the management of these relationships and enables cascade behavior when performing operations on related objects.
 - SQLAlchemy provides [session management](https://docs.sqlalchemy.org/en/20/orm/session_basics.html#what-does-the-session-do), which acts as a container for maintaining conversations with the database. The session holds the ORM objects affected by the transaction and ensures that they are committed to the database together or not at all (using `session.commit()`). This is useful for maintaining consistency and integrity of the data.
 
@@ -134,27 +147,85 @@ Visit links below to see full documentation:
 
 ## Third party services (R7)
 
-### Flask (2.3.2)
-
 The REST API was built using Flask, a Python micro-framework that runs on the server-side, providing essential functionalities to handle the incoming request, determine the route and request methods, and send an appropriate response back to the client.
 
 The following third-party services are used in this app (for full list, see [src/requirements.txt](/src/requirements.txt)).
 
-### SQLAlchemy (2.0.16)
+### SQLAlchemy (2.0.16) & Flask-SQLAlchemy (3.0.3)
 
-SQLAlchemy is an Object Relational Mapper tool that serves as a bridge between python and the database (postgresql).
+SQLAlchemy is an ORM tool that serves as a bridge between python and the database (postgreSQL). In this project, it is used together with its wrapper Flask-SQLAlchemy to define models that represent database tables using python classes as well as translating python codes into SQL queries, achieving an object-oriented approach to data manipulation and makes the code easier to maintain.
 
-It is used for defining models and querying data.
+Example usage of SQLAlchemy:
 
-Flask-SQLAlchemy (3.0.3)
+```python
+# in init.py, create the db object using flask-sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
-![sqlalchemy in code](/docs/sqlalchemy-example.png)
+# in app.py, configure PostgreSQL database, initialise the app with the extension
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URI')
+db.init_app(app)
+
+# in user.py, define the User model
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15), nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
+    password = db.Column(db.String, nullable=False)
+
+# in cli_bp.py, create user table, seed table with existing data
+db.create_all()
+db.session.add_all(users)
+db.session.commit()
+
+# in auth_bp.py, query table data
+stmt = db.select(User).filter_by(email=request.json['email'])
+user = db.session.scalar(stmt)
+```
 
 ### psycopg2 (2.9.6)
 
-### Flask-marshmallow (0.15.0)
+Psycopg is the [PostgreSQL database adapter](https://pypi.org/project/psycopg2/) for Python. It is specified in the DB_URI connection string, e.g. `DB_URI="postgresql+psycopg2://dev:password@localhost:5432/db"`, in order to assist SQLAlchemy to interact with PostgreSQL.
+
+### marshmallow (3.19.0) & Flask-marshmallow (0.15.0)
+
+Marshmallow is an ORM library used to:
+
+- convert app-level objects to JSON format using `Schema.dump()`
+- load input data to app-level objects using `Schema.load()`
+  - raise `ValidationError` when input data doesn't meet validation requirements
+
+Example usage of marshmallow:
+
+```python
+# in init.py, create the ma object using flask-marshmallow
+from flask_marshmallow import Marshmallow
+ma = Marshmallow()
+
+# in app.py, initialise the app with the extension
+ma.init_app(app)
+
+# in user.py, define user schema
+class UserSchema(ma.Schema):
+    # specify validation requirements
+    email = fields.Email(required=True)
+    is_admin = fields.Boolean(load_default=False)
+    class Meta:
+        fields = ('id', 'username', 'email', 'password',
+                  'is_admin', 'joined_since', 'cats')
+
+# in users_bp.py, convert ORM object to JSON result
+UserSchema(exclude=['password', 'cats']).dump(user)
+
+# in users_bp.py, convert JSON result to ORM object as well as sanitising input
+user_info = UserSchema().load(request.json, partial=True)
+```
 
 ### Flask-Bcrypt (1.0.1)
+
+Example usage of flask-bcrypt:
 
 ### Flask-JWT-Extended (4.5.2)
 
