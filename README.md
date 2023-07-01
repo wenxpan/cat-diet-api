@@ -142,13 +142,100 @@ Visit links below to see full documentation:
 ## ERD and database relations (R6/R9)
 
 ### ERD
+
 ![ERD for Cat Diet API](./docs/erd.png)
 
 <!-- R9 (database terminology) - at the lower level, the same relationships at the database level; tables, foreign key, primary key, use database language to talk about how it works, how the relationships work -->
 
 ### Table - users
 
-- 
+This table stores essential information about the user.
+
+Attributes:
+
+- id: auto-generated integer, primary key of the table
+- username: name to be displayed in the user profile (does not need to be real name), the string is mandatory, should be unique and not exceed 15 characters
+- password: password of the user's account which cannot be set null
+- is_admin: a boolean showing whether the user has admin rights which cannot be set null
+- joined_since: the date user registers the account; it is auto generated and cannot be changed by users
+
+Relationships:
+
+- one-to-many relationship between users and cats: A user can have many or no cats, a cat can only belong to one user
+
+### Table - cats
+
+This table stores information about the cats owned by the users.
+
+Attributes:
+
+- id: auto-generated integer, primary key of the table
+- name: name of the cat, the string is mandatory and should be no longer than 100 characters. There can be duplicate names for cats.
+- year_born: the year that the cat was born. It should be integer and can be set null.
+- year_adopted: the year that the cat was adopted by the user. It should be integer and can be set null. It should not be earlier than year_born.
+- breed: breed of the cat, it should be a string no longer than 100 characters.
+- owner_id: this is a foreign key and references to id in users table. It represents the one-to-many relationship between cats and users. It cannot be set to null - a cat must have a owner.
+
+Relationships:
+
+- one-to-many relationship between users and cats: A user can have many or no cats, a cat can only belong to one user. The cat will be deleted if their owner gets removed.
+- one-to-many relationship between cats and notes: There can be many notes about a cat, and a note should only be about one cat.
+
+### Table - notes
+
+This table stores information about the notes created by the user to track their cat's reaction to foods.
+
+Attributes:
+
+- id: auto-generated integer, primary key of the table
+- message: a string representing content of the note
+- rating: an integer (-1, 0, or 1), indicating whether the note is negative, neutral or positive
+- date_recorded: the date recorded in the note
+- cat_id: a foreign key that references id in the cats table. It represents the one-to-many relationship between notes and cats
+- food_id: a foreign key that references id in the foods table. It represents the one-to-many relationship between notes and foods
+
+Relationships:
+
+- one-to-many relationship between notes and cats: There can be many notes about a cat, and a note should only be about one cat. The note will be deleted if the cat gets deleted
+- one-to-many relationship between notes and foods: There can be many notes about a food, and a note should only be about one food. The note will be deleted if the food gets deleted
+- It does not have an explicit relationship with users, because it can be deduced from its relationship with the cat (e.g. note.cat.owner_id); only the cat owner can take notes about their cats
+
+### Table - foods
+
+This table stores information about the cat foods.
+
+Attributes:
+
+- id: auto-generated integer, primary key of the table
+- name: a string that represents the name of the food, it should not exceed 200 characters and should be mandatory and unique
+- brand: the brand of the food (can be set to null), a string not exceeding 100 characters
+- category: the type that the food belongs to, it should be one of: 'Wet', 'Dry', 'Freeze-dried', 'Raw', 'Cooked', 'Treats'
+
+Relationships:
+
+- One-to-many relationship between notes and foods: There can be many notes about a food, and a note should only be about one food.
+- Many-to-many relationship between foods and ingredients: A food can contain many ingredients, and an ingredient can be included in many foods. This is reflected in the join table food_ingredients
+
+### Table - ingredients
+
+This table stores information about the ingredients that can be contained in foods.
+
+Attributes:
+
+- id: auto-generated integer, primary key of the table
+- name: a string that represents the name of the ingredient, it should not exceed 100 characters and should be mandatory and unique
+- category: the type that the ingredient belongs to, it should be one of: 'Meat', 'Seafood', 'Derivatives', 'Grains', 'Vegetables', 'Other'
+
+Relationships:
+
+- Many-to-many relationship between foods and ingredients: A food can contain many ingredients, and an ingredient can be included in many foods. This is reflected in the join table food_ingredients below.
+
+### Join table - food_ingredients
+
+Attributes
+
+- food_id: this is a foreign key that references id in the foods table. It is an integer and should not be set null
+- ingredient_id: this is a foreign key that references id in the ingredients table. It is an integer and should not be set null. Together with food_id, the two attributes form primary keys of this table.
 
 ## Third party services (R7)
 
