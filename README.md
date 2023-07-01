@@ -109,6 +109,13 @@ Overall, PostgreSQL is well-suited for the content and requirements of the app. 
 
 ## Functionalities and benefits of an ORM (R4)
 
+An Object Relational Mapper (ORM) plays a crucial role in connecting object-oriented programming (OOP) with relational databases. It offers several key functionalities and benefits, which are particularly relevant to the Cat Diet API project:
+
+- Using SQLAlchemy as the ORM, the developer can interact the database using python instead of writing SQL queries directly. For example, writing `db.select(Cat)` in python will be converted by ORM to SQL query like `SELECT * FROM cats`. It helps abstracts away the complexities of SQL syntax to let developers [focus on high-level implementation](https://www.educative.io/answers/what-is-object-relational-mapping).
+- Using ORM can generate objects that map to database tables, providing an object-oriented approach to data manipulation. In this project, each entity (users, cats, foods etc.) corresponds to a model class, and the attributes of each class represent the fields of the tables.
+- ORM supports mapping relationships between classes/models to relationships between database tables using foreign keys. This feature is valuable for establishing relationships between entities in the app, such as the relationship between users and cats or between foods and ingredients. The ORM simplifies the management of these relationships and enables cascade behavior when performing operations on related objects.
+- SQLAlchemy provides [session management](https://docs.sqlalchemy.org/en/20/orm/session_basics.html#what-does-the-session-do), which acts as a container for maintaining conversations with the database. The session holds the ORM objects affected by the transaction and ensures that they are committed to the database together or not at all (using `session.commit()`). This is useful for maintaining consistency and integrity of the data.
+
 ## API endpoints (R5)
 
 Here is an overview of the API endpoints:
