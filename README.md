@@ -124,7 +124,7 @@ class User(db.Model):
 ```
 
 users table generated in PostgreSQL:
-![users table](image.png)
+![users table](/docs/table-postgres.png)
 
 - ORM supports mapping relationships between classes/models to relationships between database tables using foreign keys. This feature is valuable for establishing relationships between entities in the app, such as the relationship between users and cats or between foods and ingredients. The ORM simplifies the management of these relationships and enables cascade behavior when performing operations on related objects.
 - SQLAlchemy provides [session management](https://docs.sqlalchemy.org/en/20/orm/session_basics.html#what-does-the-session-do), which acts as a container for maintaining conversations with the database. The session holds the ORM objects affected by the transaction and ensures that they are committed to the database together or not at all (using `session.commit()`). This is useful for maintaining consistency and integrity of the data.
@@ -225,7 +225,25 @@ user_info = UserSchema().load(request.json, partial=True)
 
 ### Flask-Bcrypt (1.0.1)
 
+
+
 Example usage of flask-bcrypt:
+
+```python
+# in init.py, create bcrypt object
+from flask_bcrypt import Bcrypt
+bcrypt = Bcrypt()
+
+# in app.py, initiate app with the extension
+bcrypt.init_app(app)
+
+# in auth_bp.py, hash the password before creating model instance
+password=bcrypt.generate_password_hash(
+            user_info['password']).decode('utf-8')
+
+# check the input password against hashed password stored in db
+bcrypt.check_password_hash(user.password, request.json['password'])
+```
 
 ### Flask-JWT-Extended (4.5.2)
 

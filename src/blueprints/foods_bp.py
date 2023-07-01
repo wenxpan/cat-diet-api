@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import IntegrityError
 from models.food import Food, FoodSchema
 from utils.authorise import admin_required
-from utils.set_ingredient import set_ingredient
+from utils.set_ingredients import set_ingredients
 
 # create blueprint for the /foods endpoint
 foods_bp = Blueprint('food', __name__, url_prefix='/foods')
@@ -30,7 +30,7 @@ def create_food():
 
     try:
         # load data using schema to sanitize and validate input
-        food_info = FoodSchema().load(request.json)
+        food_info = FoodSchema().load(request.json, partial=True)
 
         # create a new Food model instance
         food = Food(
@@ -39,7 +39,7 @@ def create_food():
             category=food_info.get('category'), # optional
         )
 
-        food.ingredients = set_ingredient(food, food_info.get('ingredients'))
+        set_ingredients(food, food_info.get('ingredients'))
 
         # add and commit food to db
         db.session.add(food)
@@ -84,14 +84,14 @@ def update_food(food_id):
     if food:
         try:
             # load data using schema to sanitize and validate input
-            food_info = FoodSchema().load(request.json, partial=True)
+            food_info = FoodSchema(exclude=['ingredients']).load(request.json, partial=True)
 
             # update fields; all fields can be optional, so get methods are used
             food.name = food_info.get('name', food.name)
             food.category = food_info.get('category', food.category)
             food.brand = food_info.get('brand', food.brand)
 
-            food.ingredients = set_ingredient(food, food_info.get('ingredients'))
+            set_ingredients(food, food_info.get('ingredients'))
 
             # commit changes to db
             db.session.commit()

@@ -2,7 +2,7 @@ from models.ingredient import Ingredient
 from init import db
 from flask import abort
 
-def set_ingredient(food, ingredients_info):
+def set_ingredients(food, ingredients_info):
     # check if input includes ingredients field
     
     if ingredients_info:
