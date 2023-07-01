@@ -39,6 +39,7 @@ def create_food():
             category=food_info.get('category'), # optional
         )
 
+        # set food ingredients using helper function
         set_ingredients(food, food_info.get('ingredients'))
 
         # add and commit food to db
@@ -91,6 +92,7 @@ def update_food(food_id):
             food.category = food_info.get('category', food.category)
             food.brand = food_info.get('brand', food.brand)
 
+            # set food ingredients using helper function
             set_ingredients(food, food_info.get('ingredients'))
 
             # commit changes to db

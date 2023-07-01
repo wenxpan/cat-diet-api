@@ -149,6 +149,8 @@ Visit links below to see full documentation:
 
 The REST API was built using Flask, a Python micro-framework that runs on the server-side, providing essential functionalities to handle the incoming request, determine the route and request methods, and send an appropriate response back to the client.
 
+Flask itself is lightweight and has a flexible structure, and various packages can be added to the app to achieve additional functionalities.
+
 The following third-party services are used in this app (for full list, see [src/requirements.txt](/src/requirements.txt)).
 
 ### SQLAlchemy (2.0.16) & Flask-SQLAlchemy (3.0.3)
@@ -225,7 +227,9 @@ user_info = UserSchema().load(request.json, partial=True)
 
 ### Flask-Bcrypt (1.0.1)
 
+Flask-Bcrypt is a Flask extension that provides bcrypt hashing utilities for application. It is designed to be ["de-optimized"](https://pypi.org/project/Flask-Bcrypt/) so that hashed data is more difficult to crack than other faster algorithms.
 
+In this project, it is used to hash user passwords before storing it to db and verify passwords during login. By doing so, it adds an additional security layer and ensures that sensitive data is safely handled and will not expose to anyone.
 
 Example usage of flask-bcrypt:
 
@@ -245,9 +249,66 @@ password=bcrypt.generate_password_hash(
 bcrypt.check_password_hash(user.password, request.json['password'])
 ```
 
-### Flask-JWT-Extended (4.5.2)
+Hashed passwords are stored in postgresql database, so even admin is not able to access raw passwords:
+![Hashed password in database](/docs/hashed-password.png)
 
 ### python-dotenv (1.0.0)
+
+Python-dotenv is used to read key-value pairs from a .env file and can set them as environment variables.
+
+In this project, `.env` file is created to store JWT secret key and SQLAlechemy's database connection string. The file is not published to remote repo, ensuring that confidential information is stored safely, and users can set their own environment variables on their end by setting up `.env` file.
+
+```python
+# in app.py, import environment variables
+from os import environ
+app.config['JWT_SECRET_KEY'] = environ.get('JWT_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URI')
+```
+
+### Flask-JWT-Extended (4.5.2)
+
+Flask-JWT-Extended is used to integrate JWT (JSON Web Tokens) support in the flask app. This helps to ensure that user's identity is authenticated before they perform sensitive operations. For example, a person cannot create new food if they are not logged in (i.e. no token in the request header). It also helps maintaining authorisation levels. For example, a user cannot add notes for a cat that they don't own; this is verified by getting identity from the token and checking it against the owner id in the database.
+
+Example usage of flask-jwt-extended:
+
+```python
+# in init.py, create jwt object
+from flask_jwt_extended import JWTManager
+jwt = JWTManager()
+
+# in app.py, initiate app with extension
+jwt.init_app(app)
+
+# in auth_bp.py, jwt token is generated with user id after verification
+from flask_jwt_extended import create_access_token
+token = create_access_token(
+                identity=user.id, expires_delta=timedelta(days=1))
+
+# in blueprints, jwt_required() decorator is used to protect routes
+@jwt_required()
+
+# in utils.authorise, get_jwt_identity is used to determine token identity
+user_id = get_jwt_identity()
+```
+
+User token is returned when logged in:
+![Response token](/docs/response-token.png)
+
+If user does not add bearer token in the request header for protected routes, it will return 401 error with the message:
+
+```JSON
+{
+    "msg": "Missing Authorization Header"
+}
+```
+
+Or if the token identity does not match the authorisation level, it will return message like this:
+
+```JSON
+{
+    "error": "401 Unauthorized: You must be an admin"
+}
+```
 
 ## Porject models and relationships (R8)
 
