@@ -15,31 +15,31 @@ Table of Contents
   - [R3 - Database system: benefits and drawbacks](#r3---database-system-benefits-and-drawbacks)
   - [R4 - Functionalities and benefits of an ORM](#r4---functionalities-and-benefits-of-an-orm)
   - [R5 - API endpoints](#r5---api-endpoints)
-    - [📁 Collection: auth](#-collection-auth)
+    - [Auth Routes](#auth-routes)
       - [End-point: /auth/register](#end-point-authregister)
       - [End-point: /auth/login](#end-point-authlogin)
-    - [📁 Collection: users](#-collection-users)
+    - [User Routes](#user-routes)
       - [End-point: /users](#end-point-users)
       - [End-point: /users](#end-point-users-1)
       - [End-point: /users/user_id](#end-point-usersuser_id)
       - [End-point: /users/user_id](#end-point-usersuser_id-1)
       - [End-point: /users/user_id](#end-point-usersuser_id-2)
       - [End-point: /users/user_id](#end-point-usersuser_id-3)
-    - [📁 Collection: foods](#-collection-foods)
+    - [Food Routes](#food-routes)
       - [End-point: /foods](#end-point-foods)
       - [End-point: /foods](#end-point-foods-1)
       - [End-point: /foods/food_id](#end-point-foodsfood_id)
       - [End-point: /foods/food_id](#end-point-foodsfood_id-1)
       - [End-point: /foods/food_id](#end-point-foodsfood_id-2)
       - [End-point: /foods/food_id](#end-point-foodsfood_id-3)
-    - [📁 Collection: ingredients](#-collection-ingredients)
+    - [Ingredient Routes](#ingredient-routes)
       - [End-point: /ingredients](#end-point-ingredients)
       - [End-point: /ingredients](#end-point-ingredients-1)
       - [End-point: /ingredients/ingredient_id](#end-point-ingredientsingredient_id)
       - [End-point: /ingredients/ingredient_id](#end-point-ingredientsingredient_id-1)
       - [End-point: /ingredients/ingredient_id](#end-point-ingredientsingredient_id-2)
       - [End-point: /ingredients/ingredient_id](#end-point-ingredientsingredient_id-3)
-    - [📁 Collection: cats](#-collection-cats)
+    - [Cat Routes](#cat-routes)
       - [End-point: /cats](#end-point-cats)
       - [End-point: /cats](#end-point-cats-1)
       - [End-point: /cats/cat_id](#end-point-catscat_id)
@@ -47,7 +47,7 @@ Table of Contents
       - [End-point: /cats/cat_id](#end-point-catscat_id-2)
       - [End-point: /cats/cat_id](#end-point-catscat_id-3)
       - [End-point: cats/cat_id/food](#end-point-catscat_idfood)
-    - [📁 Collection: notes](#-collection-notes)
+    - [Note Routes](#note-routes)
       - [End-point: /notes](#end-point-notes)
       - [End-point: /notes](#end-point-notes-1)
       - [End-point: /notes/note_id](#end-point-notesnote_id)
@@ -84,55 +84,55 @@ Table of Contents
 
 ## Installation and setup
 
-- Open terminal and run the PostgreSQL prompt:
+1. Open terminal and run the PostgreSQL prompt:
 
-```
-psql
-```
+   ```
+   psql
+   ```
 
-- Create and connect to database
+2. Create and connect to database:
 
-```
-Create DATABASE cat_diet;
-\c cat_diet;
-```
+   ```
+   Create DATABASE cat_diet;
+   \c cat_diet;
+   ```
 
-- Create a user with password and grant user priviliges:
+3. Create a user with password and grant user priviliges:
 
-```
-CREATE USER cat_diet_dev WITH PASSWORD 'admin123';
-GRANT ALL PRIVILEGES ON DATABASE cat_diet TO cat_diet_dev;
-```
+   ```
+   CREATE USER cat_diet_dev WITH PASSWORD 'admin123';
+   GRANT ALL PRIVILEGES ON DATABASE cat_diet TO cat_diet_dev;
+   ```
 
-- Open another terminal. Use `cd` command and direct to the `WenxuanPan_T2A2/src` directory
+4. Open another terminal. Use `cd` command and direct to the `WenxuanPan_T2A2/src` directory
 
-- Create and activate virtual environment
+5. Create and activate virtual environment:
 
-```
-python3 -m venv .venv
-source .venv/bin/activate
-```
+   ```
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
 
-- Install dependencies
+6. Install dependencies
 
-```
-python3 -m pip install -r requirements.txt
-```
+   ```
+   python3 -m pip install -r requirements.txt
+   ```
 
-- Rename `.env.sample` to `.env`, and set the db connection string and JWT secret key:
+7. Rename `.env.sample` to `.env`, and set the db connection string and JWT secret key:
 
-```
-DB_URI=postgresql+psycopg2://cat_diet_dev:admin123@localhost:5432/cat_diet
-JWT_KEY=Your Secret Key
-```
+   ```
+   DB_URI=postgresql+psycopg2://cat_diet_dev:admin123@localhost:5432/cat_diet
+   JWT_KEY=Your Secret Key
+   ```
 
-- In terminal, create and seed the database, then run the flask app:
+8. In terminal, create and seed the database, then run the flask app:
 
-```
-flask db create
-flask db seed
-flask run
-```
+   ```
+   flask db create
+   flask db seed
+   flask run
+   ```
 
 The server will run on `http://127.0.0.1:5000`.
 
@@ -200,6 +200,7 @@ An Object Relational Mapper (ORM) plays a crucial role in connecting object-orie
   ```
 
   users table generated in PostgreSQL:
+
   ![users table](/docs/table-postgres.png)
 
 - ORM supports mapping relationships between classes/models to relationships between database tables using foreign keys. This feature is valuable for establishing relationships between entities in the app, such as the relationship between users and cats or between foods and ingredients. The ORM simplifies the management of these relationships and enables cascade behavior when performing operations on related objects.
@@ -209,7 +210,7 @@ An Object Relational Mapper (ORM) plays a crucial role in connecting object-orie
 
 For more details and example requests on each endpoint, see [API documentation - Postman version](https://documenter.getpostman.com/view/28027782/2s93zB5MTY#intro)
 
-### 📁 Collection: auth
+### Auth Routes
 
 #### End-point: /auth/register
 
@@ -303,7 +304,7 @@ Optional fields: None
 }
 ```
 
-### 📁 Collection: users
+### User Routes
 
 #### End-point: /users
 
@@ -492,7 +493,7 @@ Note: is_admin and joined_since status cannot be changed
 
 #### End-point: /users/user_id
 
-Arguments: user id
+Arguments: user id (integer)
 
 Description: allows owner or admin to update user information of the selected id (except is_admin and joined_since fields)
 
@@ -536,7 +537,7 @@ Note: is_admin and joined_since status cannot be changed
 
 #### End-point: /users/user_id
 
-Arguments: user id
+Arguments: user id (integer)
 
 Description: Allows admin to delete a user from the database
 
@@ -562,7 +563,7 @@ Optional fields: None
 }
 ```
 
-### 📁 Collection: foods
+### Food Routes
 
 #### End-point: /foods
 
@@ -679,7 +680,7 @@ Optional fields: brand (str), category (str), ingredients (list)
 
 #### End-point: /foods/food_id
 
-Arguments: food id
+Arguments: food id (integer)
 
 Description: returns food of the selected id
 
@@ -738,7 +739,7 @@ Optional fields: None
 
 #### End-point: /foods/food_id
 
-Arguments: food id
+Arguments: food id (integer)
 
 Description: updates food information of the selected id
 
@@ -787,7 +788,7 @@ Optional fields: name (str), brand (str), category (str), ingredients (list)
 
 #### End-point: /foods/food_id
 
-Arguments: food id
+Arguments: food id (integer)
 
 Description: updates food information of the selected id
 
@@ -836,7 +837,7 @@ Optional fields: name (str), brand (str), category (str), ingredients (list)
 
 #### End-point: /foods/food_id
 
-Arguments: food id
+Arguments: food id (integer)
 
 Description: allows admin to delete a food from database
 
@@ -862,7 +863,7 @@ Optional fields: None
 }
 ```
 
-### 📁 Collection: ingredients
+### Ingredient Routes
 
 #### End-point: /ingredients
 
@@ -970,7 +971,7 @@ Optional fields: category (str)
 
 #### End-point: /ingredients/ingredient_id
 
-Arguments: ingredient id
+Arguments: ingredient id (integer)
 
 Description: returns ingredient of the selected id
 
@@ -1014,7 +1015,7 @@ Optional fields: None
 
 #### End-point: /ingredients/ingredient_id
 
-Arguments: ingredient id
+Arguments: ingredient id (integer)
 
 Description: updates ingredient information of the selected id
 
@@ -1053,7 +1054,7 @@ Optional fields: name (str), category (str)
 
 #### End-point: /ingredients/ingredient_id
 
-Arguments: ingredient id
+Arguments: ingredient id (integer)
 
 Description: updates ingredient information of the selected id
 
@@ -1092,7 +1093,7 @@ Optional fields: name (str), category (str)
 
 #### End-point: /ingredients/ingredient_id
 
-Arguments: ingredient id
+Arguments: ingredient id (integer)
 
 Description: allows admin to delete an ingredient from database
 
@@ -1118,7 +1119,7 @@ Optional fields: None
 }
 ```
 
-### 📁 Collection: cats
+### Cat Routes
 
 #### End-point: /cats
 
@@ -1235,7 +1236,7 @@ Optional fields: breed (str), year_born (int), year_adopted (int)
 
 #### End-point: /cats/cat_id
 
-Arguments: cat id
+Arguments: cat id (integer)
 
 Description: returns cat of the selected id and their owner name and notes
 
@@ -1320,7 +1321,7 @@ Optional fields: None
 
 #### End-point: /cats/cat_id
 
-Arguments: cat id
+Arguments: cat id (integer)
 
 Description: update cat information of the selected id
 
@@ -1366,7 +1367,7 @@ Optional fields: name (str), breed (str), year_born (int), year_adopted (int)
 
 #### End-point: /cats/cat_id
 
-Arguments: cat id
+Arguments: cat id (integer)
 
 Description: update cat information of the selected id
 
@@ -1412,7 +1413,7 @@ Optional fields: name (str), breed (str), year_born (int), year_adopted (int)
 
 #### End-point: /cats/cat_id
 
-Arguments: cat id
+Arguments: cat id (integer)
 
 Description: allows admin or owner to delete a cat from database
 
@@ -1440,7 +1441,7 @@ Optional fields: None
 
 #### End-point: cats/cat_id/food
 
-Arguments: cat id
+Arguments: cat id (integer)
 
 Description: returns a list of foods eaten by the cat, with statistics on total notes and rating
 
@@ -1526,7 +1527,7 @@ Optional fields: None
 ]
 ```
 
-### 📁 Collection: notes
+### Note Routes
 
 #### End-point: /notes
 
@@ -1747,7 +1748,7 @@ Optional fields: None
 
 #### End-point: /notes/note_id
 
-Arguments: note id
+Arguments: note id (integer)
 
 Description: updates note information of the selected id
 
@@ -1811,7 +1812,7 @@ Optional fields: cat_id (int), food_id (int), message (str), rating (int), date_
 
 #### End-point: /notes/note_id
 
-Arguments: note id
+Arguments: note id (integer)
 
 Description: updates note information of the selected id
 
@@ -1875,7 +1876,7 @@ Optional fields: cat_id (int), food_id (int), message (str), rating (int), date_
 
 #### End-point: /notes/note_id
 
-Arguments: note id
+Arguments: note id (integer)
 
 Description: allows admin or owner to delete a note from database
 
@@ -1904,6 +1905,8 @@ Optional fields: None
 ### Error handling
 
 See more in [Postman documentation](https://documenter.getpostman.com/view/28027782/2s93zB5MTY)
+
+![Endpoints - Error handling](/docs/postman-examples-error-handling.png)
 
 ## R6/R9 - ERD and database relations
 
