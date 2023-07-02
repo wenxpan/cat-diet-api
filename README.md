@@ -15,6 +15,46 @@ Table of Contents
   - [R3 - Database system: benefits and drawbacks](#r3---database-system-benefits-and-drawbacks)
   - [R4 - Functionalities and benefits of an ORM](#r4---functionalities-and-benefits-of-an-orm)
   - [R5 - API endpoints](#r5---api-endpoints)
+    - [📁 Collection: auth](#-collection-auth)
+      - [End-point: /auth/register](#end-point-authregister)
+      - [End-point: /auth/login](#end-point-authlogin)
+    - [📁 Collection: users](#-collection-users)
+      - [End-point: /users](#end-point-users)
+      - [End-point: /users](#end-point-users-1)
+      - [End-point: /users/user_id](#end-point-usersuser_id)
+      - [End-point: /users/user_id](#end-point-usersuser_id-1)
+      - [End-point: /users/user_id](#end-point-usersuser_id-2)
+      - [End-point: /users/user_id](#end-point-usersuser_id-3)
+    - [📁 Collection: foods](#-collection-foods)
+      - [End-point: /foods](#end-point-foods)
+      - [End-point: /foods](#end-point-foods-1)
+      - [End-point: /foods/food_id](#end-point-foodsfood_id)
+      - [End-point: /foods/food_id](#end-point-foodsfood_id-1)
+      - [End-point: /foods/food_id](#end-point-foodsfood_id-2)
+      - [End-point: /foods/food_id](#end-point-foodsfood_id-3)
+    - [📁 Collection: ingredients](#-collection-ingredients)
+      - [End-point: /ingredients](#end-point-ingredients)
+      - [End-point: /ingredients](#end-point-ingredients-1)
+      - [End-point: /ingredients/ingredient_id](#end-point-ingredientsingredient_id)
+      - [End-point: /ingredients/ingredient_id](#end-point-ingredientsingredient_id-1)
+      - [End-point: /ingredients/ingredient_id](#end-point-ingredientsingredient_id-2)
+      - [End-point: /ingredients/ingredient_id](#end-point-ingredientsingredient_id-3)
+    - [📁 Collection: cats](#-collection-cats)
+      - [End-point: /cats](#end-point-cats)
+      - [End-point: /cats](#end-point-cats-1)
+      - [End-point: /cats/cat_id](#end-point-catscat_id)
+      - [End-point: /cats/cat_id](#end-point-catscat_id-1)
+      - [End-point: /cats/cat_id](#end-point-catscat_id-2)
+      - [End-point: /cats/cat_id](#end-point-catscat_id-3)
+      - [End-point: cats/cat_id/food](#end-point-catscat_idfood)
+    - [📁 Collection: notes](#-collection-notes)
+      - [End-point: /notes](#end-point-notes)
+      - [End-point: /notes](#end-point-notes-1)
+      - [End-point: /notes/note_id](#end-point-notesnote_id)
+      - [End-point: /notes/note_id](#end-point-notesnote_id-1)
+      - [End-point: /notes/note_id](#end-point-notesnote_id-2)
+      - [End-point: /notes/note_id](#end-point-notesnote_id-3)
+    - [Error handling](#error-handling)
   - [R6/R9 - ERD and database relations](#r6r9---erd-and-database-relations)
     - [ERD](#erd)
     - [Table - users](#table---users)
@@ -83,7 +123,7 @@ python3 -m pip install -r requirements.txt
 
 ```
 DB_URI=postgresql+psycopg2://cat_diet_dev:admin123@localhost:5432/cat_diet
-JWT_SECRET_KEY=Your Secret Key
+JWT_KEY=Your Secret Key
 ```
 
 - In terminal, create and seed the database, then run the flask app:
@@ -102,7 +142,7 @@ The REST Cat Diet API aims to assist cat owners in tracking and managing their c
 
 In particular, the app addresses the following issues:
 
-- **Fussy eating:** Many cats are known to be picky eaters, and it can be challenging for cat owners to identify their cat's favourite and least favourite foods. The app provides a centralised platform for cat owners to record and track their cat's preferences, making it easier for them to choose suitable food options.
+- **Fussy eating:** Many cats are known to be picky eaters, and it can be challenging for cat owners to identify their cat's favourite and least favourite foods. The app provides a platform for cat owners to record and track their cat's preferences, making it easier for them to choose suitable food options.
 
 - **Health and nutrition**: The [Code of Practice for the Private Keeping of Cats](https://agriculture.vic.gov.au/livestock-and-animals/animal-welfare-victoria/domestic-animals-act/codes-of-practice/code-of-practice-for-the-private-keeping-of-cats#h2-6) sets the following minimum standards regarding nutrition:
 
@@ -116,22 +156,22 @@ In particular, the app addresses the following issues:
 
 - **Avoiding overfeeding treats:** Treats are given as rewards for cats, but excessive consumption can lead to weight gain and health issues, and owners might not always realise that they are overfeeding. The app allows cat owners to keep track of treat consumption and review on a regular basis to prevent overfeeding.
 
-- **Identifying allergies or intolerances:** Cats can have allergies or food intolerances, and it may take time for owners to realised and identify specific ingredients or brands that cause adverse reactions in their cats. The app allows users to note down their cat's any resistance or adverse reactions to certain foods or ingredients, which can be helpful during vet consultation and finding solutions. This will also help cat owners remember and avoid purchasing similar products in the future.
+- **Identifying allergies or intolerances:** Cats can have allergies or food intolerances, and it may take time for owners to realise and identify specific ingredients or brands that cause adverse reactions in their cats. The app allows users to note down their cat's any resistance or adverse reactions to certain foods or ingredients, which can be helpful during vet consultation and finding solutions. This will also help cat owners remember and avoid purchasing similar products in the future.
 
 ## R3 - Database system: benefits and drawbacks
 
 I have chosen PostgreSQL as the database management system, because of the following benefits:
 
-- It is a free and open source database management system.
-- It is good at handling large datasets effectively. It is ACID (Atomicity, Consistency, Isolation, Durability)compliant, which means it ensures the reliability and consistency of the stored data. This helps as the app will be potentially tracking and managing a large number of users, cats, foods, ingredients, and notes. The ability to maintain data integrity and handle complex relationships makes PostgreSQL a suitable choice.
-- It is a relational database, which provides a more structured and organized approach to store and manage data than a non-relational database. This structure aligns well with the entities in the app. The relational model allows for clear definition of entities and relationships between them, making it easier to establish and maintain data consistency.
-- PostgreSQL has an active community of developers and users and provides accessible documentation and support. Additionally, PostgreSQL integrates well with various programming languages and frameworks, including Python and Flask for this project using SQLAlchemy as the ORM.
+- It is a **free and open source** database management system.
+- It is good at **handling large datasets** effectively. It is ACID (Atomicity, Consistency, Isolation, Durability) compliant, which means it ensures the reliability and consistency of the stored data. This helps as the app will be potentially tracking and managing a large number of users, cats, foods, ingredients, and notes. The ability to maintain data integrity and handle complex relationships makes PostgreSQL a suitable choice.
+- It is a relational database, which provides a more **structured and organized** approach to store and manage data than a non-relational database. This structure aligns well with the entities in the app. The relational model allows for clear definition of entities and relationships between them, making it easier to establish and maintain data consistency.
+- PostgreSQL has an **active community** of developers and users and provides accessible documentation and support. Additionally, PostgreSQL integrates well with various programming languages and frameworks, including Python and Flask for this project using SQLAlchemy as the ORM.
 
 There are some drawbacks to be considered:
 
-- As a relational database system, it may have limitations when it comes to storing data with varying structures. Adding new attributes to a record often requires adding a new column to the entire table, which can be less flexible compared to non-relational databases. This drawback might be avoided with careful planning and design, ensuring that the schema reflects all the needed functionalities of the app, instead of users needing to add custom properties later on.
-- Data stored in PostgreSQL is not straightly compatible with objects in a programming language. This is different to a non-relational database which the data objects are usually in JSON format and can be stored directly in it. In this project, the issue is solved using marshmallow, a serialisation and deserialisation tool that helps convert data to formatted JSON result; it also has the adds-on benefit to validate and sanitize input data.
-- In terms of reading performance, PostgreSQL might not be as good as other systems such as MySQL. This is because it creates a new system process for each user connected to the database, [allocating a significant amount of memory (approximately 10 MB)](https://aws.amazon.com/compare/the-difference-between-mysql-vs-postgresql) for each connection, whereas MySQL utilizes a single process to handle multiple users, resulting in better performance for applications that primarily involve reading and displaying data to users. However, considering that PostgreSQL still performs better in frequent data updates and concurrent write operations, it remains a suitable option for this project.
+- As a relational database system, it may have limitations when it comes to **storing data with varying structures**. Adding new attributes to a record often requires adding a new column to the entire table, which can be less flexible compared to non-relational databases. This drawback might be avoided with careful planning and design, ensuring that the schema reflects all the needed functionalities of the app, instead of users needing to add custom properties later on.
+- Data stored in PostgreSQL is **not straightly compatible** with objects in a programming language. This is different to a non-relational database which the data objects are usually in JSON format and can be stored directly in it. In this project, the issue is solved using marshmallow, a serialisation and deserialisation tool that helps convert data to formatted JSON result; it also has the adds-on benefit to validate and sanitize input data.
+- In terms of **reading performance**, PostgreSQL might not be as good as other systems such as MySQL. This is because it creates a new system process for each user connected to the database, [allocating a significant amount of memory (approximately 10 MB)](https://aws.amazon.com/compare/the-difference-between-mysql-vs-postgresql) for each connection, whereas MySQL utilizes a single process to handle multiple users, resulting in better performance for applications that primarily involve reading and displaying data to users. However, considering that PostgreSQL still performs better in frequent data updates and concurrent write operations, it remains a suitable option for this project.
 
 Overall, PostgreSQL is well-suited for the content and requirements of the app. It effectively manages the relationships between various entities including users, cats, foods, ingredients, and notes. The relational database structure allows for clear definition of these entities and their relationships, enabling efficient querying and retrieval of related data. For example, the relationships between cats and their owners (users) can be easily established and tracked using foreign key constraints. The ability to store and retrieve complex relationships between entities makes PostgreSQL a suitable choice for this app's content despite its limitations.
 
@@ -142,38 +182,1728 @@ An Object Relational Mapper (ORM) plays a crucial role in connecting object-orie
 - Using SQLAlchemy as the ORM, the developer can interact the database using python instead of writing SQL queries directly. For example, writing `db.select(Cat)` in python will be converted by ORM to SQL query like `SELECT * FROM cats`. It helps abstracts away the complexities of SQL syntax to let developers [focus on high-level implementation](https://www.educative.io/answers/what-is-object-relational-mapping).
 - Using ORM can generate objects that map to database tables, providing an object-oriented approach to data manipulation. In this project, each entity (users, cats, foods etc.) corresponds to a model class, and the attributes of each class represent the fields of the tables.
 
-Example - User model defined using SQLAlchemy:
+  Example - User model defined using SQLAlchemy:
 
-```python
-class User(db.Model):
-    __tablename__ = 'users'
+  ```python
+  class User(db.Model):
+      __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(15), nullable=False)
-    email = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String, nullable=False)
-    is_admin = db.Column(db.Boolean, nullable=False, default=False)
-    joined_since = db.Column(db.Date, default=date.today())
+      id = db.Column(db.Integer, primary_key=True)
+      username = db.Column(db.String(15), nullable=False)
+      email = db.Column(db.String, nullable=False, unique=True)
+      password = db.Column(db.String, nullable=False)
+      is_admin = db.Column(db.Boolean, nullable=False, default=False)
+      joined_since = db.Column(db.Date, default=date.today())
 
-    cats = db.relationship('Cat', back_populates='owner',
-                           cascade='all, delete')
-```
+      cats = db.relationship('Cat', back_populates='owner',
+                          cascade='all, delete')
+  ```
 
-users table generated in PostgreSQL:
-![users table](/docs/table-postgres.png)
+  users table generated in PostgreSQL:
+  ![users table](/docs/table-postgres.png)
 
 - ORM supports mapping relationships between classes/models to relationships between database tables using foreign keys. This feature is valuable for establishing relationships between entities in the app, such as the relationship between users and cats or between foods and ingredients. The ORM simplifies the management of these relationships and enables cascade behavior when performing operations on related objects.
 - SQLAlchemy provides [session management](https://docs.sqlalchemy.org/en/20/orm/session_basics.html#what-does-the-session-do), which acts as a container for maintaining conversations with the database. The session holds the ORM objects affected by the transaction and ensures that they are committed to the database together or not at all (using `session.commit()`). This is useful for maintaining consistency and integrity of the data.
 
 ## R5 - API endpoints
 
-Here is an overview of the API endpoints:
-![endpoints-overview](docs/endpoints-overview.png)
+For more details and example requests on each endpoint, see [API documentation - Postman version](https://documenter.getpostman.com/view/28027782/2s93zB5MTY#intro)
 
-Visit links below to see full documentation:
+### 📁 Collection: auth
 
-- [API documentation - Postman version](https://documenter.getpostman.com/view/28027782/2s93zB5MTY#intro)
-- [API documentation - Markdown version](/docs/endpoints.md)
+#### End-point: /auth/register
+
+Arguments: None
+
+Description: Creates a user in the database
+
+Authentication: None
+
+Authorization: None
+
+Required fields: email (str), password (str), username (str)
+
+Optional fields: None
+
+**Method: POST**
+
+> ```
+> http://127.0.0.1:5000/auth/register
+> ```
+
+**Request Body**
+
+```json
+{
+  "email": "apple@gmail.com",
+  "password": "spamegg123",
+  "username": "apple"
+}
+```
+
+**Response: 201**
+
+```json
+{
+  "id": 4,
+  "username": "apple",
+  "email": "apple@gmail.com",
+  "is_admin": false,
+  "joined_since": "2023-06-28",
+  "cats": []
+}
+```
+
+#### End-point: /auth/login
+
+Arguments: None
+
+Description: allows user to login and receive a token for authentication and authorization
+
+Authentication: Email + Password
+
+Authorization: None
+
+Required fields: email (str), password(str)
+
+Optional fields: None
+
+**Method: POST**
+
+> ```
+> http://127.0.0.1:5000/auth/login
+> ```
+
+**Request Body**
+
+```json
+{
+  "email": "john@gmail.com",
+  "password": "johnisuser123"
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4NzkzNTM4NCwianRpIjoiY2NlNjIzZDktMzNkYi00MDI5LTk0YzMtYmJjZGY4NzYyNmQ5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MSwibmJmIjoxNjg3OTM1Mzg0LCJleHAiOjE2OTA1MjczODR9.J04Pl0t8DJFDPxVaPLJmXep4j9huLLg0jfe0Mkv552A",
+  "user": {
+    "id": 1,
+    "username": "MaryDev",
+    "email": "marydev@gmail.com",
+    "is_admin": true,
+    "joined_since": "2023-06-20"
+  },
+  "statistics": {
+    "total_cats": 0,
+    "total_notes": 0,
+    "total_food_reviewed": null
+  }
+}
+```
+
+### 📁 Collection: users
+
+#### End-point: /users
+
+Arguments: None
+
+Description: Return a list of all users in the database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin)
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/users
+> ```
+
+**Response: 200**
+
+```json
+[
+  {
+    "id": 1,
+    "username": "MaryDev",
+    "email": "marydev@gmail.com",
+    "is_admin": true,
+    "joined_since": "2023-06-20",
+    "cats": []
+  },
+  {
+    "id": 2,
+    "username": "John",
+    "email": "john@gmail.com",
+    "is_admin": false,
+    "joined_since": "2023-06-20",
+    "cats": [
+      {
+        "id": 1,
+        "name": "Luna",
+        "breed": "Domestic Shorthair",
+        "year_born": 2020,
+        "year_adopted": 2021
+      }
+    ]
+  }
+]
+```
+
+#### End-point: /users
+
+Arguments: None
+
+Description: Allows admin to create a new user or admin in the database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin)
+
+Required fields: username (str), email (str), password (str)
+
+Optional fields: is_admin (bool)
+
+**Method: POST**
+
+> ```
+> http://127.0.0.1:5000/users
+> ```
+
+**Request Body**
+
+```json
+{
+  "username": "newuser",
+  "email": "newuser@gmail.com",
+  "is_admin": true,
+  "password": "default123"
+}
+```
+
+**Response: 201**
+
+```json
+{
+  "id": 4,
+  "username": "newuser",
+  "email": "newuser@gmail.com",
+  "is_admin": true,
+  "joined_since": "2023-06-30",
+  "cats": []
+}
+```
+
+#### End-point: /users/user_id
+
+Arguments: user id
+
+Description: returns information and statistics of the selected user
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin or owner)
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/users/:user_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "id": 2,
+  "username": "John",
+  "email": "john@gmail.com",
+  "is_admin": false,
+  "joined_since": "2023-06-20",
+  "cats": [
+    {
+      "id": 1,
+      "name": "Luna",
+      "breed": "Domestic Shorthair",
+      "year_born": 2020,
+      "year_adopted": 2021
+    }
+  ],
+  "statistics": {
+    "total_cats": 1,
+    "total_notes": 5,
+    "total_foods_reviewed": 3
+  }
+}
+```
+
+#### End-point: /users/user_id
+
+Arguments: user id
+
+Description: allows owner or admin to update user information of the selected id (except is_admin and joined_since fields)
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin or owner)
+
+Required fields: None
+
+Optional fields: username (str), email (str), password (str)
+
+Note: is_admin and joined_since status cannot be changed
+
+**Method: PUT**
+
+> ```
+> http://127.0.0.1:5000/users/:user_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "username": "new_name",
+  "email": "newmaryemail@gmail.com",
+  "password": "newpassword123"
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "username": "new_name",
+  "email": "newmaryemail@gmail.com",
+  "is_admin": true,
+  "joined_since": "2023-06-20"
+}
+```
+
+#### End-point: /users/user_id
+
+Arguments: user id
+
+Description: allows owner or admin to update user information of the selected id (except is_admin and joined_since fields)
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin or owner)
+
+Required fields: None
+
+Optional fields: username (str), email (str), password (str)
+
+Note: is_admin and joined_since status cannot be changed
+
+**Method: PATCH**
+
+> ```
+> http://127.0.0.1:5000/users/:user_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "username": "new_name",
+  "email": "newmaryemail1@gmail.com",
+  "password": "newpassword123"
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "username": "new_name",
+  "email": "newmaryemail@gmail.com",
+  "is_admin": true,
+  "joined_since": "2023-06-20"
+}
+```
+
+#### End-point: /users/user_id
+
+Arguments: user id
+
+Description: Allows admin to delete a user from the database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin)
+
+Required fields: None
+
+Optional fields: None
+
+**Method: DELETE**
+
+> ```
+> http://127.0.0.1:5000/users/:user_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "message": "User 2 and related cats and notes deleted"
+}
+```
+
+### 📁 Collection: foods
+
+#### End-point: /foods
+
+Arguments: None
+
+Description: returns a list of foods with their ingredients
+
+Authentication: None
+
+Authorization: None
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/foods
+> ```
+
+**Response: 200**
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Tuna With Prawn Canned Adult Cat Food",
+    "brand": "Applaws",
+    "category": "Wet",
+    "ingredients": [
+      {
+        "id": 5,
+        "name": "Tuna",
+        "category": "Seafood"
+      },
+      {
+        "id": 6,
+        "name": "Prawn",
+        "category": "Seafood"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Chicken Wet Cat Food Cans",
+    "brand": "Ziwi",
+    "category": "Wet",
+    "ingredients": [
+      {
+        "id": 1,
+        "name": "Chicken",
+        "category": "Meat"
+      }
+    ]
+  }
+]
+```
+
+#### End-point: /foods
+
+Arguments: None
+
+Description: creates a new food in the database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (logged in user)
+
+Required fields: name (str)
+
+Optional fields: brand (str), category (str), ingredients (list)
+
+**Method: POST**
+
+> ```
+> http://127.0.0.1:5000/foods
+> ```
+
+**Request Body**
+
+```json
+{
+  "name": "Cats In The Kitchen Pantry Party Pouch Variety Pack In Gravy Wet Cat Food Pouches",
+  "category": "wet",
+  "brand": "Weruva",
+  "ingredients": [{ "id": 1 }, { "id": 2 }]
+}
+```
+
+**Response: 201**
+
+```json
+{
+  "id": 5,
+  "name": "Cats In The Kitchen Pantry Party Pouch Variety Pack In Gravy Wet Cat Food Pouches",
+  "brand": "Weruva",
+  "category": "Wet",
+  "ingredients": [
+    {
+      "id": 1,
+      "name": "Chicken",
+      "category": "Meat"
+    },
+    {
+      "id": 2,
+      "name": "Lamb",
+      "category": "Meat"
+    }
+  ],
+  "notes": []
+}
+```
+
+#### End-point: /foods/food_id
+
+Arguments: food id
+
+Description: returns food of the selected id
+
+Authentication: None
+
+Authorization: None
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/foods/:food_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "name": "Tuna With Prawn Canned Adult Cat Food",
+  "brand": "Applaws",
+  "category": "Wet",
+  "ingredients": [
+    {
+      "id": 5,
+      "name": "Tuna",
+      "category": "Seafood"
+    },
+    {
+      "id": 6,
+      "name": "Prawn",
+      "category": "Seafood"
+    }
+  ],
+  "notes": [
+    {
+      "id": 1,
+      "message": "Luna was ok with it, maybe will try a different one",
+      "rating": 0,
+      "date_recorded": "2023-06-24",
+      "cat": {
+        "id": 1,
+        "name": "Luna",
+        "breed": "Domestic Shorthair",
+        "owner": {
+          "username": "John"
+        }
+      }
+    }
+  ]
+}
+```
+
+#### End-point: /foods/food_id
+
+Arguments: food id
+
+Description: updates food information of the selected id
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin)
+
+Required fields: None
+
+Optional fields: name (str), brand (str), category (str), ingredients (list)
+
+**Method: PUT**
+
+> ```
+> http://127.0.0.1:5000/foods/:food_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "brand": "new brand",
+  "category": "Freeze-dried",
+  "name": "new food",
+  "ingredients": [{ "id": 1 }]
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "name": "new food",
+  "brand": "new brand",
+  "category": "Freeze-dried",
+  "ingredients": [
+    {
+      "id": 1,
+      "name": "Chicken",
+      "category": "Meat"
+    }
+  ]
+}
+```
+
+#### End-point: /foods/food_id
+
+Arguments: food id
+
+Description: updates food information of the selected id
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin)
+
+Required fields: None
+
+Optional fields: name (str), brand (str), category (str), ingredients (list)
+
+**Method: PATCH**
+
+> ```
+> http://127.0.0.1:5000/foods/:food_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "brand": "new brand",
+  "category": "Freeze-dried",
+  "name": "new food",
+  "ingredients": [{ "id": 1 }]
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "name": "new food",
+  "brand": "new brand",
+  "category": "Freeze-dried",
+  "ingredients": [
+    {
+      "id": 1,
+      "name": "Chicken",
+      "category": "Meat"
+    }
+  ]
+}
+```
+
+#### End-point: /foods/food_id
+
+Arguments: food id
+
+Description: allows admin to delete a food from database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin)
+
+Required fields: None
+
+Optional fields: None
+
+**Method: DELETE**
+
+> ```
+> http://127.0.0.1:5000/foods/:food_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "message": "Food 1 and related notes deleted"
+}
+```
+
+### 📁 Collection: ingredients
+
+#### End-point: /ingredients
+
+Arguments: None
+
+Description: returns a list of ingredients and related foods
+
+Authentication: None
+
+Authorization: None
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/ingredients
+> ```
+
+**Response: 200**
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Chicken",
+    "category": "Meat",
+    "foods": [
+      {
+        "id": 2,
+        "name": "Chicken Wet Cat Food Cans",
+        "brand": "Ziwi",
+        "category": "Wet"
+      },
+      {
+        "id": 3,
+        "name": "Adult Oral Care Dry Cat Food",
+        "brand": "Hills Science Diet",
+        "category": "Dry"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Lamb",
+    "category": "Meat",
+    "foods": []
+  },
+  {
+    "id": 3,
+    "name": "Brown Rice",
+    "category": "Grains",
+    "foods": [
+      {
+        "id": 3,
+        "name": "Adult Oral Care Dry Cat Food",
+        "brand": "Hills Science Diet",
+        "category": "Dry"
+      }
+    ]
+  }
+]
+```
+
+#### End-point: /ingredients
+
+Arguments: None
+
+Description: creates a new ingredient in the database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (logged in user)
+
+Required fields: name (str)
+
+Optional fields: category (str)
+
+**Method: POST**
+
+> ```
+> http://127.0.0.1:5000/ingredients
+> ```
+
+**Request Body**
+
+```json
+{
+  "name": "Beef",
+  "category": "Meat"
+}
+```
+
+**Response: 201**
+
+```json
+{
+  "id": 8,
+  "name": "Beef",
+  "category": "Meat"
+}
+```
+
+#### End-point: /ingredients/ingredient_id
+
+Arguments: ingredient id
+
+Description: returns ingredient of the selected id
+
+Authentication: None
+
+Authorization: None
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/ingredients/:ingredient_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "name": "Chicken",
+  "category": "Meat",
+  "foods": [
+    {
+      "id": 2,
+      "name": "Chicken Wet Cat Food Cans",
+      "brand": "Ziwi",
+      "category": "Wet"
+    },
+    {
+      "id": 3,
+      "name": "Adult Oral Care Dry Cat Food",
+      "brand": "Hills Science Diet",
+      "category": "Dry"
+    }
+  ]
+}
+```
+
+#### End-point: /ingredients/ingredient_id
+
+Arguments: ingredient id
+
+Description: updates ingredient information of the selected id
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin)
+
+Required fields: None
+
+Optional fields: name (str), category (str)
+
+**Method: PUT**
+
+> ```
+> http://127.0.0.1:5000/ingredients/:ingredient_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "name": "new name",
+  "category": "Other"
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "name": "new name",
+  "category": "Other"
+}
+```
+
+#### End-point: /ingredients/ingredient_id
+
+Arguments: ingredient id
+
+Description: updates ingredient information of the selected id
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin)
+
+Required fields: None
+
+Optional fields: name (str), category (str)
+
+**Method: PATCH**
+
+> ```
+> http://127.0.0.1:5000/ingredients/:ingredient_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "name": "new name",
+  "category": "Other"
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "name": "new name",
+  "category": "Other"
+}
+```
+
+#### End-point: /ingredients/ingredient_id
+
+Arguments: ingredient id
+
+Description: allows admin to delete an ingredient from database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin)
+
+Required fields: None
+
+Optional fields: None
+
+**Method: DELETE**
+
+> ```
+> http://127.0.0.1:5000/ingredients/:ingredient_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "message": "Ingredient 1 deleted"
+}
+```
+
+### 📁 Collection: cats
+
+#### End-point: /cats
+
+Arguments: None
+
+Description: returns a list of cats and their owner's name
+
+Authentication: None
+
+Authorization: None
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/cats
+> ```
+
+**Response: 200**
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Luna",
+    "breed": "Domestic Shorthair",
+    "year_born": 2020,
+    "year_adopted": 2021,
+    "owner": {
+      "username": "John"
+    }
+  },
+  {
+    "id": 2,
+    "name": "Leo",
+    "breed": "Exotic Shorthair",
+    "year_born": null,
+    "year_adopted": 2022,
+    "owner": {
+      "username": "Frank"
+    }
+  },
+  {
+    "id": 3,
+    "name": "Milo",
+    "breed": "Ragdoll",
+    "year_born": 2015,
+    "year_adopted": 2019,
+    "owner": {
+      "username": "Frank"
+    }
+  },
+  {
+    "id": 4,
+    "name": "Oreo",
+    "breed": "Domestic Longhair",
+    "year_born": null,
+    "year_adopted": 2019,
+    "owner": {
+      "username": "Frank"
+    }
+  }
+]
+```
+
+#### End-point: /cats
+
+Arguments: None
+
+Description: creates a new cat in the database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (logged in user)
+
+Required fields: name (str)
+
+Optional fields: breed (str), year_born (int), year_adopted (int)
+
+**Method: POST**
+
+> ```
+> http://127.0.0.1:5000/cats
+> ```
+
+**Request Body**
+
+```json
+{
+  "name": "new cat",
+  "year_born": "2019",
+  "year_adopted": "2020",
+  "breed": "British Shorthair"
+}
+```
+
+**Response: 201**
+
+```json
+{
+  "id": 5,
+  "name": "new cat",
+  "breed": "British Shorthair",
+  "year_born": 2019,
+  "year_adopted": 2020,
+  "owner": {
+    "username": "Frank"
+  }
+}
+```
+
+#### End-point: /cats/cat_id
+
+Arguments: cat id
+
+Description: returns cat of the selected id and their owner name and notes
+
+Authentication: None
+
+Authorization: None
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/cats/:cat_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "name": "Luna",
+  "breed": "Domestic Shorthair",
+  "year_born": 2020,
+  "year_adopted": 2021,
+  "owner": {
+    "username": "John"
+  },
+  "notes": [
+    {
+      "id": 1,
+      "message": "Luna was ok with it, maybe will try a different one",
+      "rating": 0,
+      "date_recorded": "2023-06-24",
+      "food": {
+        "id": 1,
+        "name": "Tuna With Prawn Canned Adult Cat Food",
+        "brand": "Applaws",
+        "category": "Wet",
+        "ingredients": [
+          {
+            "id": 5,
+            "name": "Tuna",
+            "category": "Seafood"
+          },
+          {
+            "id": 6,
+            "name": "Prawn",
+            "category": "Seafood"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "message": "Luna likes the treats",
+      "rating": 1,
+      "date_recorded": "2023-06-24",
+      "food": {
+        "id": 4,
+        "name": "Feline Treats Dental Catnip Flavour Tub",
+        "brand": "Greenies",
+        "category": "Treats",
+        "ingredients": [
+          {
+            "id": 4,
+            "name": "Ground Wheat",
+            "category": "Grains"
+          },
+          {
+            "id": 7,
+            "name": "Chicken Meal",
+            "category": "Derivatives"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+#### End-point: /cats/cat_id
+
+Arguments: cat id
+
+Description: update cat information of the selected id
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin or owner)
+
+Required fields: None
+
+Optional fields: name (str), breed (str), year_born (int), year_adopted (int)
+
+**Method: PUT**
+
+> ```
+> http://127.0.0.1:5000/cats/:cat_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "name": "new name",
+  "year_born": "2020",
+  "year_adopted": "2021",
+  "breed": "new breed"
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 4,
+  "name": "new name",
+  "breed": "new breed",
+  "year_born": 2020,
+  "year_adopted": 2021,
+  "owner": {
+    "username": "Frank"
+  }
+}
+```
+
+#### End-point: /cats/cat_id
+
+Arguments: cat id
+
+Description: update cat information of the selected id
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin or owner)
+
+Required fields: None
+
+Optional fields: name (str), breed (str), year_born (int), year_adopted (int)
+
+**Method: PATCH**
+
+> ```
+> http://127.0.0.1:5000/cats/:cat_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "name": "new name",
+  "year_born": "2020",
+  "year_adopted": "2021",
+  "breed": "new breed"
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "name": "new name",
+  "breed": "new breed",
+  "year_born": 2020,
+  "year_adopted": 2021,
+  "owner": {
+    "username": "John"
+  }
+}
+```
+
+#### End-point: /cats/cat_id
+
+Arguments: cat id
+
+Description: allows admin or owner to delete a cat from database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin or owner)
+
+Required fields: None
+
+Optional fields: None
+
+**Method: DELETE**
+
+> ```
+> http://127.0.0.1:5000/cats/:cat_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "message": "Cat 2 and related notes deleted"
+}
+```
+
+#### End-point: cats/cat_id/food
+
+Arguments: cat id
+
+Description: returns a list of foods eaten by the cat, with statistics on total notes and rating
+
+Authentication: None
+
+Authorization: None
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/cats/:cat_id/food
+> ```
+
+**Response: 200**
+
+```json
+[
+  {
+    "food": {
+      "id": 2,
+      "name": "Chicken Wet Cat Food Cans",
+      "brand": "Ziwi",
+      "category": "Wet",
+      "ingredients": [
+        {
+          "id": 1,
+          "name": "Chicken",
+          "category": "Meat"
+        }
+      ]
+    },
+    "total_notes": 3,
+    "total_rating": 2
+  },
+  {
+    "food": {
+      "id": 4,
+      "name": "Feline Treats Dental Catnip Flavour Tub",
+      "brand": "Greenies",
+      "category": "Treats",
+      "ingredients": [
+        {
+          "id": 4,
+          "name": "Ground Wheat",
+          "category": "Grains"
+        },
+        {
+          "id": 7,
+          "name": "Chicken Meal",
+          "category": "Derivatives"
+        }
+      ]
+    },
+    "total_notes": 1,
+    "total_rating": 1
+  },
+  {
+    "food": {
+      "id": 1,
+      "name": "Tuna With Prawn Canned Adult Cat Food",
+      "brand": "Applaws",
+      "category": "Wet",
+      "ingredients": [
+        {
+          "id": 5,
+          "name": "Tuna",
+          "category": "Seafood"
+        },
+        {
+          "id": 6,
+          "name": "Prawn",
+          "category": "Seafood"
+        }
+      ]
+    },
+    "total_notes": 1,
+    "total_rating": 0
+  }
+]
+```
+
+### 📁 Collection: notes
+
+#### End-point: /notes
+
+Arguments: None
+
+Description: returns a list of notes, each with its related cat and food information
+
+Authentication: None
+
+Authorization: None
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/notes
+> ```
+
+**Response: 200**
+
+```json
+[
+  {
+    "id": 1,
+    "message": "Luna was ok with it, maybe will try a different one",
+    "rating": 0,
+    "date_recorded": "2023-06-24",
+    "cat": {
+      "id": 1,
+      "name": "Luna",
+      "breed": "Domestic Shorthair",
+      "owner": {
+        "username": "John"
+      }
+    },
+    "food": {
+      "id": 1,
+      "name": "Tuna With Prawn Canned Adult Cat Food",
+      "brand": "Applaws",
+      "category": "Wet",
+      "ingredients": [
+        {
+          "id": 5,
+          "name": "Tuna",
+          "category": "Seafood"
+        },
+        {
+          "id": 6,
+          "name": "Prawn",
+          "category": "Seafood"
+        }
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "message": "Luna likes the treats",
+    "rating": 1,
+    "date_recorded": "2023-06-24",
+    "cat": {
+      "id": 1,
+      "name": "Luna",
+      "breed": "Domestic Shorthair",
+      "owner": {
+        "username": "John"
+      }
+    },
+    "food": {
+      "id": 4,
+      "name": "Feline Treats Dental Catnip Flavour Tub",
+      "brand": "Greenies",
+      "category": "Treats",
+      "ingredients": [
+        {
+          "id": 4,
+          "name": "Ground Wheat",
+          "category": "Grains"
+        },
+        {
+          "id": 7,
+          "name": "Chicken Meal",
+          "category": "Derivatives"
+        }
+      ]
+    }
+  }
+]
+```
+
+#### End-point: /notes
+
+Arguments: None
+
+Description: create a new note in the database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (logged in user)
+
+Required fields: cat_id (int), food_id (int)
+
+Optional fields: message (str), rating (int), date_recorded (date)
+
+**Method: POST**
+
+> ```
+> http://127.0.0.1:5000/notes
+> ```
+
+**Request Body**
+
+```json
+{
+  "cat_id": 1,
+  "food_id": 2,
+  "message": "cat 1 likes food 2",
+  "rating": 0,
+  "date_recorded": "2023-06-30"
+}
+```
+
+**Response: 201**
+
+```json
+{
+  "id": 10,
+  "message": "cat 2 likes food 1",
+  "rating": 1,
+  "date_recorded": "2023-06-30",
+  "cat": {
+    "id": 2,
+    "name": "Leo",
+    "breed": "Exotic Shorthair",
+    "owner": {
+      "username": "Frank"
+    }
+  },
+  "food": {
+    "id": 1,
+    "name": "Tuna With Prawn Canned Adult Cat Food",
+    "brand": "Applaws",
+    "category": "Wet",
+    "ingredients": [
+      {
+        "id": 5,
+        "name": "Tuna",
+        "category": "Seafood"
+      },
+      {
+        "id": 6,
+        "name": "Prawn",
+        "category": "Seafood"
+      }
+    ]
+  }
+}
+```
+
+#### End-point: /notes/note_id
+
+Arguments: note id
+
+Description: returns note of the selected id and the related cat and food information
+
+Authentication: None
+
+Authorization: None
+
+Required fields: None
+
+Optional fields: None
+
+**Method: GET**
+
+> ```
+> http://127.0.0.1:5000/notes/:note_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "id": 1,
+  "message": "Luna was ok with it, maybe will try a different one",
+  "rating": 0,
+  "date_recorded": "2023-06-24",
+  "cat": {
+    "id": 1,
+    "name": "Luna",
+    "breed": "Domestic Shorthair",
+    "owner": {
+      "username": "John"
+    }
+  },
+  "food": {
+    "id": 1,
+    "name": "Tuna With Prawn Canned Adult Cat Food",
+    "brand": "Applaws",
+    "category": "Wet",
+    "ingredients": [
+      {
+        "id": 5,
+        "name": "Tuna",
+        "category": "Seafood"
+      },
+      {
+        "id": 6,
+        "name": "Prawn",
+        "category": "Seafood"
+      }
+    ]
+  }
+}
+```
+
+#### End-point: /notes/note_id
+
+Arguments: note id
+
+Description: updates note information of the selected id
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin or owner)
+
+Required fields: None
+
+Optional fields: cat_id (int), food_id (int), message (str), rating (int), date_recorded (date)
+
+**Method: PUT**
+
+> ```
+> http://127.0.0.1:5000/notes/:note_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "date_recorded": "2023-05-02",
+  "cat_id": 3,
+  "food_id": 2,
+  "message": "new message",
+  "rating": 1
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 6,
+  "message": "new message",
+  "rating": 1,
+  "date_recorded": "2023-05-02",
+  "cat": {
+    "id": 3,
+    "name": "Milo",
+    "breed": "Ragdoll",
+    "owner": {
+      "username": "Frank"
+    }
+  },
+  "food": {
+    "id": 2,
+    "name": "Chicken Wet Cat Food Cans",
+    "brand": "Ziwi",
+    "category": "Wet",
+    "ingredients": [
+      {
+        "id": 1,
+        "name": "Chicken",
+        "category": "Meat"
+      }
+    ]
+  }
+}
+```
+
+#### End-point: /notes/note_id
+
+Arguments: note id
+
+Description: updates note information of the selected id
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin or owner)
+
+Required fields: None
+
+Optional fields: cat_id (int), food_id (int), message (str), rating (int), date_recorded (date)
+
+**Method: PATCH**
+
+> ```
+> http://127.0.0.1:5000/notes/:note_id
+> ```
+
+**Request Body**
+
+```json
+{
+  "date_recorded": "2023-05-02",
+  "cat_id": 3,
+  "food_id": 2,
+  "message": "new message",
+  "rating": 1
+}
+```
+
+**Response: 200**
+
+```json
+{
+  "id": 6,
+  "message": "new message",
+  "rating": 1,
+  "date_recorded": "2023-05-02",
+  "cat": {
+    "id": 3,
+    "name": "Milo",
+    "breed": "Ragdoll",
+    "owner": {
+      "username": "Frank"
+    }
+  },
+  "food": {
+    "id": 2,
+    "name": "Chicken Wet Cat Food Cans",
+    "brand": "Ziwi",
+    "category": "Wet",
+    "ingredients": [
+      {
+        "id": 1,
+        "name": "Chicken",
+        "category": "Meat"
+      }
+    ]
+  }
+}
+```
+
+#### End-point: /notes/note_id
+
+Arguments: note id
+
+Description: allows admin or owner to delete a note from database
+
+Authentication: JWT Required
+
+Authorization: Bearer Token (admin or owner)
+
+Required fields: None
+
+Optional fields: None
+
+**Method: DELETE**
+
+> ```
+> http://127.0.0.1:5000/notes/:note_id
+> ```
+
+**Response: 200**
+
+```json
+{
+  "message": "Note 1 deleted"
+}
+```
+
+### Error handling
+
+See more in [Postman documentation](https://documenter.getpostman.com/view/28027782/2s93zB5MTY)
 
 ## R6/R9 - ERD and database relations
 
@@ -266,7 +1996,7 @@ Relationships:
 
 ### Join table - food_ingredients
 
-Attributes
+Attributes:
 
 - food_id: this is a foreign key that references id in the foods table. It is an integer and should not be set null
 - ingredient_id: this is a foreign key that references id in the ingredients table. It is an integer and should not be set null. Together with food_id, the two attributes form primary keys of this table.
@@ -376,6 +2106,7 @@ bcrypt.check_password_hash(user.password, request.json['password'])
 ```
 
 Hashed passwords are stored in postgresql database, so even admin is not able to access raw passwords:
+
 ![Hashed password in database](/docs/hashed-password.png)
 
 ### python-dotenv (1.0.0)
@@ -768,9 +2499,11 @@ I've kept track of bonus features and will come back to them when the core featu
 
 ![draft additional features](/docs/additional-features-plan.png)
 
-I've drafted sample json in vscode to get an idea of expected output, which helps me work on the draft ERD:
+I've drafted sample json in vscode to get an idea of expected output:
 
 ![sample json](docs/draft-json.png)
+
+This helps me work on the draft ERD:
 
 ![draft ERD](docs/draft-erd.png)
 

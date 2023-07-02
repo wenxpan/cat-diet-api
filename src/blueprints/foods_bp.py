@@ -20,7 +20,7 @@ def all_foods():
     foods = db.session.scalars(stmt)
 
     # return serialized result
-    return FoodSchema(many=True).dump(foods)
+    return FoodSchema(many=True, exclude=['notes']).dump(foods)
 
 
 @foods_bp.route('/', methods=['POST'])
