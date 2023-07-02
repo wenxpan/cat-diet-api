@@ -35,7 +35,7 @@ Table of Contents
     - [Cat model](#cat-model)
     - [Food model](#food-model)
     - [Ingredient model](#ingredient-model)
-    - [food_ingredient join table](#food_ingredient-join-table)
+    - [food_ingredients join table](#food_ingredients-join-table)
     - [Note model](#note-model)
   - [R10 - Project planning and implementation](#r10---project-planning-and-implementation)
     - [Overall timeline](#overall-timeline)
@@ -180,8 +180,6 @@ Visit links below to see full documentation:
 ### ERD
 
 ![ERD for Cat Diet API](./docs/erd.png)
-
-<!-- R9 (database terminology) - at the lower level, the same relationships at the database level; tables, foreign key, primary key, use database language to talk about how it works, how the relationships work -->
 
 ### Table - users
 
@@ -440,11 +438,9 @@ Or if the token identity does not match the authorisation level, it will return 
 
 ## R8 - Project models and relationships
 
-Describe your projects models in terms of the relationships they have with each other
+There are 5 models in this project: User, Cat, Food, Ingredient, Note, created as python subclasses extending `db.Model`. Inside each model, attributes are set as instances of `db.Column`, and arguments can be passed in to set the primary/foreign key, data types, default value and any restrictions etc.
 
-<!-- R8 (python code) - about SQLAlchemy models, relationships between the models using sqlalchemy language; `db.relationship`, `db.ForeignKey` -->
-
-There are 5 models created in this project: User, Cat, Food, Ingredient, Note. There is an additional join table food_ingredient that reflects the many-to-many relationship between Food and Ingredient.
+There is an additional join table food_ingredient (created using `db.Table`) that reflects the many-to-many relationship between Food and Ingredient.
 
 ### User model
 
@@ -463,11 +459,11 @@ class User(db.Model):
                            cascade='all, delete')
 ```
 
-- The primary key of the model is `id`, defined using `primary_key=True`.
+- The primary key of the User model is `id`, defined using `primary_key=True`.
 - `username`, `email`, `password` and `is_admin` are set as `nullable=False`, meaning they are required fields. If no value of `is_admin` is given, it will be set as default False.
 - Instead of `db.ForeignKey`, the User model just has a `db.relationship` with `cats`, representing the one-to-many relationship: one user can have many cats; and as it back populates with the single `owner` in `Cat` model, one cat can only belong to one owner. `cascade='all, delete'` means that the cats will be removed if their owner is deleted.
 
-Returned JSON result:
+Example JSON result:
 
 ```JSON
 {
@@ -514,7 +510,13 @@ class Cat(db.Model):
         'Note', back_populates='cat', cascade='all, delete')
 ```
 
-returned JSON result
+- The primary key of the Cat model is `id`, defined using `primary_key=True`.
+- `name` is set as `nullable=False`, meaning it is required field; `db.String(100)` means that it must be a string no longer than 100 characters.
+- `owner_id` is set as foreign key using `db.ForeignKey` that references to `users.id`, and `ondelete='CASCADE'` means that the cat record will be removed when their owner is deleted
+- `owner` represents the one-to-many relationship between cats and users, and it is back referencing the `cats` attribute in User model, in order to establish two-way relationship.
+- `notes` is set using `db.relationship`, meaning there is one-to-many relationship between notes and cats, and `cascade='all, delete'` means the note will be deleted when the related cat is deleted
+
+Example JSON result:
 
 ```JSON
 {
@@ -530,7 +532,7 @@ returned JSON result
 }
 ```
 
-marshmallow schema
+The nested field of owner and list of notes are created through marshmallow schema:
 
 ```python
 owner = fields.Nested('UserSchema', only=[
@@ -551,13 +553,18 @@ class Food(db.Model):
     category = db.Column(db.String(30))
 
     ingredients = db.relationship(
-        'Ingredient', secondary=food_ingredient, back_populates='foods')
+        'Ingredient', secondary=food_ingredients, back_populates='foods')
 
     notes = db.relationship(
         'Note', back_populates='food', cascade='all, delete')
 ```
 
-returned JSON result
+- The primary key of the Food model is `id`, defined using `primary_key=True`.
+- `name` is set as `nullable=False, unique=True`, meaning it is required field and there cannot be duplicate names; `db.String(200)` means that it must be a string no longer than 200 characters.
+- `ingredients` represents the many-to-many relationship between foods and ingredients (Ingredient model), `secondary=food_ingredients` indicates the join table between the two entities, and it is back referencing the `foods` attribute in Ingredient model
+- `notes` is set using `db.relationship`, meaning there is one-to-many relationship between notes and foods, and `cascade='all, delete'` means the note will be deleted when the related food is deleted
+
+Example JSON result:
 
 ```JSON
 {
@@ -581,7 +588,7 @@ returned JSON result
 }
 ```
 
-marshmallow schema
+The nested lists of ingredients and notes are created through marshmallow schema:
 
 ```python
 ingredients = fields.List(fields.Nested(
@@ -601,10 +608,14 @@ class Ingredient(db.Model):
     category = db.Column(db.String(30))
 
     foods = db.relationship(
-        'Food', secondary=food_ingredient, back_populates='ingredients')
+        'Food', secondary=food_ingredients, back_populates='ingredients')
 ```
 
-returned JSON result
+- The primary key of the Food model is `id`, defined using `primary_key=True`.
+- `name` is set as `nullable=False, unique=True`, meaning it is required field and there cannot be duplicate names; `db.String(100)` means that it must be a string no longer than 100 characters.
+- `foods` represents the many-to-many relationship between foods and ingredients (Ingredient model), `secondary=food_ingredients` indicates the join table between the two entities, and it is back referencing the `ingredients` attribute in Food model
+
+Example JSON result:
 
 ```JSON
 {
@@ -622,21 +633,26 @@ returned JSON result
 }
 ```
 
-marshmallow schema:
+The nested list of foods is created through marshmallow schema:
 
 ```python
 foods = fields.List(fields.Nested(
     'FoodSchema', exclude=['notes', 'ingredients']))
 ```
 
-### food_ingredient join table
+### food_ingredients join table
 
 ```python
-food_ingredient = db.Table('food_ingredient',
+food_ingredients = db.Table('food_ingredients',
                            db.Column('food_id', db.Integer,
                                      db.ForeignKey('foods.id', ondelete='CASCADE'), primary_key=True),
                            db.Column('ingredient_id', db.Integer, db.ForeignKey('ingredients.id', ondelete='CASCADE'), primary_key=True))
 ```
+
+- `'food_ingredients'` passed in `db.Table` represents the table name in postgresql database
+- column `food_id` is set as the foreign key that references `id` in `foods` table, and `ondelete='CASCADE'` means the food_ingredient record will be deleted if the related food is removed
+- column `ingredient_id` is set as the foreign key that references `id` in `ingredients` table, and `ondelete='CASCADE'` means the food_ingredient record will be deleted if the related ingredient is removed
+- `food_id` and `ingredient_id` are together set as the primary keys of the table by passing in `primary_key=True` in both columns
 
 ### Note model
 
@@ -658,7 +674,13 @@ class Note(db.Model):
     food = db.relationship('Food', back_populates='notes')
 ```
 
-returned JSON
+- The primary key of the Note model is `id`, defined using `primary_key=True`.
+- Default values are set for `rating` and `date_recorded` using `default=0` and `default=date.today()`
+- `cat_id` and `food_id` are set as foreign keys using `db.ForeignKey` that references to `cats.id` and `foods.id`, and `ondelete='CASCADE'` means that the note record will be removed when the related cat or food is deleted
+- `cat` represents the one-to-many relationship between cats and notes, and it is back referencing the `notes` attribute in Cat model, in order to establish two-way relationship.
+- `food` represents the one-to-many relationship between foods and notes, and it is back referencing the `notes` attribute in Food model, in order to establish two-way relationship.
+
+Example JSON result:
 
 ```JSON
 {
@@ -695,7 +717,7 @@ returned JSON
 }
 ```
 
-marshmallow schema
+The nested fields of food and cat are created through marshmallow schema:
 
 ```python
     cat = fields.Nested('CatSchema', only=['id', 'name', 'breed', 'owner'])
