@@ -6,6 +6,42 @@
 - [Trello Board](https://trello.com/b/IJJ0hY8f/t2a2-implementation-plan)
 - [API Documentation](https://documenter.getpostman.com/view/28027782/2s93zB5MTY)
 
+Table of Contents
+
+- [T2A2 - Cat Diet API](#t2a2---cat-diet-api)
+  - [Links](#links)
+  - [Installation and setup](#installation-and-setup)
+  - [R1/R2 - Problem identification and justification](#r1r2---problem-identification-and-justification)
+  - [R3 - Database system: benefits and drawbacks](#r3---database-system-benefits-and-drawbacks)
+  - [R4 - Functionalities and benefits of an ORM](#r4---functionalities-and-benefits-of-an-orm)
+  - [R5 - API endpoints](#r5---api-endpoints)
+  - [R6/R9 - ERD and database relations](#r6r9---erd-and-database-relations)
+    - [ERD](#erd)
+    - [Table - users](#table---users)
+    - [Table - cats](#table---cats)
+    - [Table - notes](#table---notes)
+    - [Table - foods](#table---foods)
+    - [Table - ingredients](#table---ingredients)
+    - [Join table - food_ingredients](#join-table---food_ingredients)
+  - [R7 - Third party services](#r7---third-party-services)
+    - [SQLAlchemy (2.0.16) \& Flask-SQLAlchemy (3.0.3)](#sqlalchemy-2016--flask-sqlalchemy-303)
+    - [psycopg2 (2.9.6)](#psycopg2-296)
+    - [marshmallow (3.19.0) \& Flask-marshmallow (0.15.0)](#marshmallow-3190--flask-marshmallow-0150)
+    - [Flask-Bcrypt (1.0.1)](#flask-bcrypt-101)
+    - [python-dotenv (1.0.0)](#python-dotenv-100)
+    - [Flask-JWT-Extended (4.5.2)](#flask-jwt-extended-452)
+  - [R8 - Project models and relationships](#r8---project-models-and-relationships)
+    - [User model](#user-model)
+    - [Cat model](#cat-model)
+    - [Food model](#food-model)
+    - [Ingredient model](#ingredient-model)
+    - [food_ingredient join table](#food_ingredient-join-table)
+    - [Note model](#note-model)
+  - [R10 - Project planning and implementation](#r10---project-planning-and-implementation)
+    - [Overall timeline](#overall-timeline)
+    - [Planning](#planning)
+    - [Implementing](#implementing)
+
 ## Installation and setup
 
 - Open terminal and run the PostgreSQL prompt:
@@ -60,7 +96,7 @@ flask run
 
 The server will run on `http://127.0.0.1:5000`.
 
-## Problem identification and justification (R1/R2)
+## R1/R2 - Problem identification and justification
 
 The REST Cat Diet API aims to assist cat owners in tracking and managing their cat's diet and food preferences, as well as monitoring any changes over time, in order to keep a well-balanced diet for their cats.
 
@@ -82,7 +118,7 @@ In particular, the app addresses the following issues:
 
 - **Identifying allergies or intolerances:** Cats can have allergies or food intolerances, and it may take time for owners to realised and identify specific ingredients or brands that cause adverse reactions in their cats. The app allows users to note down their cat's any resistance or adverse reactions to certain foods or ingredients, which can be helpful during vet consultation and finding solutions. This will also help cat owners remember and avoid purchasing similar products in the future.
 
-## Database system: benefits and drawbacks (R3)
+## R3 - Database system: benefits and drawbacks
 
 I have chosen PostgreSQL as the database management system, because of the following benefits:
 
@@ -99,7 +135,7 @@ There are some drawbacks to be considered:
 
 Overall, PostgreSQL is well-suited for the content and requirements of the app. It effectively manages the relationships between various entities including users, cats, foods, ingredients, and notes. The relational database structure allows for clear definition of these entities and their relationships, enabling efficient querying and retrieval of related data. For example, the relationships between cats and their owners (users) can be easily established and tracked using foreign key constraints. The ability to store and retrieve complex relationships between entities makes PostgreSQL a suitable choice for this app's content despite its limitations.
 
-## Functionalities and benefits of an ORM (R4)
+## R4 - Functionalities and benefits of an ORM
 
 An Object Relational Mapper (ORM) plays a crucial role in connecting object-oriented programming (OOP) with relational databases. It offers several key functionalities and benefits, which are particularly relevant to the Cat Diet API project:
 
@@ -129,7 +165,7 @@ users table generated in PostgreSQL:
 - ORM supports mapping relationships between classes/models to relationships between database tables using foreign keys. This feature is valuable for establishing relationships between entities in the app, such as the relationship between users and cats or between foods and ingredients. The ORM simplifies the management of these relationships and enables cascade behavior when performing operations on related objects.
 - SQLAlchemy provides [session management](https://docs.sqlalchemy.org/en/20/orm/session_basics.html#what-does-the-session-do), which acts as a container for maintaining conversations with the database. The session holds the ORM objects affected by the transaction and ensures that they are committed to the database together or not at all (using `session.commit()`). This is useful for maintaining consistency and integrity of the data.
 
-## API endpoints (R5)
+## R5 - API endpoints
 
 Here is an overview of the API endpoints:
 ![endpoints-overview](docs/endpoints-overview.png)
@@ -139,7 +175,7 @@ Visit links below to see full documentation:
 - [API documentation - Postman version](https://documenter.getpostman.com/view/28027782/2s93zB5MTY#intro)
 - [API documentation - Markdown version](/docs/endpoints.md)
 
-## ERD and database relations (R6/R9)
+## R6/R9 - ERD and database relations
 
 ### ERD
 
@@ -237,7 +273,7 @@ Attributes
 - food_id: this is a foreign key that references id in the foods table. It is an integer and should not be set null
 - ingredient_id: this is a foreign key that references id in the ingredients table. It is an integer and should not be set null. Together with food_id, the two attributes form primary keys of this table.
 
-## Third party services (R7)
+## R7 - Third party services
 
 The REST API was built using Flask, a Python micro-framework that runs on the server-side, providing essential functionalities to handle the incoming request, determine the route and request methods, and send an appropriate response back to the client.
 
@@ -402,7 +438,7 @@ Or if the token identity does not match the authorisation level, it will return 
 }
 ```
 
-## Porject models and relationships (R8)
+## R8 - Project models and relationships
 
 Describe your projects models in terms of the relationships they have with each other
 
@@ -593,7 +629,7 @@ foods = fields.List(fields.Nested(
     'FoodSchema', exclude=['notes', 'ingredients']))
 ```
 
-#### food_ingredient join table
+### food_ingredient join table
 
 ```python
 food_ingredient = db.Table('food_ingredient',
@@ -666,7 +702,7 @@ marshmallow schema
     food = fields.Nested('FoodSchema', exclude=['notes'])
 ```
 
-## Project planning and implementation (R10)
+## R10 - Project planning and implementation
 
 ### Overall timeline
 
@@ -703,21 +739,27 @@ Based on the user stories, I've created a list of routes with core functionaliti
 ![draft endpoints](/docs/draft-endpoints.png)
 
 I've then added the user stories to the project board:
+
 ![Project board as at 19 June](/docs/trello-19Jun.jpg)
 
 I've kept track of bonus features and will come back to them when the core features are implemented:
+
 ![draft additional features](/docs/additional-features-plan.png)
 
 I've drafted sample json in vscode to get an idea of expected output, which helps me work on the draft ERD:
+
 ![sample json](docs/draft-json.png)
+
 ![draft ERD](docs/draft-erd.png)
 
 ### Implementing
 
 I've used the API platform Postman to group all routes to one collection to help with testing endpoints and creating documentation:
+
 ![routes in postman](docs/routes-in-postman.png)
 
 I've created examples in each request to keep track of error handling:
+
 ![postman example](/docs/postman-duplicate-email.png)
 
 I've used Trello board to allocate tasks and deadlines for each user story/feature, in order to keep track of project progress.
