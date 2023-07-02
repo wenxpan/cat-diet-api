@@ -178,8 +178,8 @@ Attributes:
 
 Relationships:
 
-- one-to-many relationship between users and cats: A user can have many or no cats, a cat can only belong to one user. The cat will be deleted if their owner gets removed.
-- one-to-many relationship between cats and notes: There can be many notes about a cat, and a note should only be about one cat.
+- one-to-many relationship between users and cats: A user can have many or no cats, a cat can only and must belong to one user. The cat will be deleted if their owner gets removed.
+- one-to-many relationship between cats and notes: There can be many or no notes about a cat, and a note should only and must be about one cat.
 
 ### Table - notes
 
@@ -196,9 +196,9 @@ Attributes:
 
 Relationships:
 
-- one-to-many relationship between notes and cats: There can be many notes about a cat, and a note should only be about one cat. The note will be deleted if the cat gets deleted
-- one-to-many relationship between notes and foods: There can be many notes about a food, and a note should only be about one food. The note will be deleted if the food gets deleted
-- It does not have an explicit relationship with users, because it can be deduced from its relationship with the cat (e.g. note.cat.owner_id); only the cat owner can take notes about their cats
+- one-to-many relationship between notes and cats: There can be many or no notes about a cat, and a note should only and must be about one cat. The note will be deleted if the cat gets deleted.
+- one-to-many relationship between notes and foods: There can be many or no notes about a food, and a note should only and must be about one food. The note will be deleted if the food gets deleted
+- It does not have an explicit relationship with users, because it can be deduced from its relationship with the cat (e.g. note.cat.owner_id); only the cat owner can take notes about their cats.
 
 ### Table - foods
 
@@ -213,8 +213,8 @@ Attributes:
 
 Relationships:
 
-- One-to-many relationship between notes and foods: There can be many notes about a food, and a note should only be about one food.
-- Many-to-many relationship between foods and ingredients: A food can contain many ingredients, and an ingredient can be included in many foods. This is reflected in the join table food_ingredients
+- One-to-many relationship between notes and foods: There can be many or no notes about a food, and a note should only and must be about one food.
+- Many-to-many relationship between foods and ingredients: A food can contain many or no ingredients, and an ingredient can be included in many or no foods. This is reflected in the join table food_ingredients.
 
 ### Table - ingredients
 
@@ -228,7 +228,7 @@ Attributes:
 
 Relationships:
 
-- Many-to-many relationship between foods and ingredients: A food can contain many ingredients, and an ingredient can be included in many foods. This is reflected in the join table food_ingredients below.
+- Many-to-many relationship between foods and ingredients: A food can contain many or no ingredients, and an ingredient can be included in many or no foods. This is reflected in the join table food_ingredients below.
 
 ### Join table - food_ingredients
 
@@ -668,4 +668,58 @@ marshmallow schema
 
 ## Project planning and implementation (R10)
 
-- [Trello Board](https://trello.com/b/IJJ0hY8f/t2a2-implementation-plan)
+### Overall timeline
+
+At the beginning of the project, I've created a [Trello Board](https://trello.com/b/IJJ0hY8f/t2a2-implementation-plan) and set the overall timeline of the project:
+
+- Project planning (by 19 Jun)
+- App set up (by 20 Jun)
+- MVP features (by 25 Jun)
+- Bonus features (by 27 Jun)
+- Tests and review (by 29 Jun)
+- Documentation (by 30 Jun)
+- Submission (by 2 Jul)
+
+### Planning
+
+During planning stage, the following user stories were developed:
+
+- As a user, I want register and log in to record and retrieve my related data.
+- As an admin, I want to access a list of all users and create other admins
+- As an admin/account owner, I want to view my profile and make edits to make sure my information is up-to-date
+- As a cat owner, I want to see a list of all cat foods available
+- As a cat owner, I want to create my own food if it is not available in the app
+- As an cat owner, I want to make changes to the food to make sure they are accurate, and delete food where neccessary
+- As a cat owner, I want to see a list of all cats, and maybe others' cats as well to browse their food preferences
+- As a cat owner, I want to add my cat in the system
+- As a cat owner, I want to see a list of all notes and any particular note to see how my cat (or anyone else's cat) reacts to any food
+- As a cat owner, I want to create notes regarding my cat's reaction to foods
+- As a cat owner who created the note, I want to be able to edit or delete it if I see any issues
+- As a cat owner, I want to see what ingredients a food contains, to help me find any existing patterns of cat's diet
+- As a cat owner, I want to check summary statistics, e.g. how many time I have tried the food to a particular cat and what are their overall reaction to it.
+
+Based on the user stories, I've created a list of routes with core functionalities to get an overall image of the project:
+
+![draft endpoints](/docs/draft-endpoints.png)
+
+I've then added the user stories to the project board:
+![Project board as at 19 June](/docs/trello-19Jun.jpg)
+
+I've kept track of bonus features and will come back to them when the core features are implemented:
+![draft additional features](/docs/additional-features-plan.png)
+
+I've drafted sample json in vscode to get an idea of expected output, which helps me work on the draft ERD:
+![sample json](docs/draft-json.png)
+![draft ERD](docs/draft-erd.png)
+
+### Implementing
+
+I've used the API platform Postman to group all routes to one collection to help with testing endpoints and creating documentation:
+![routes in postman](docs/routes-in-postman.png)
+
+I've created examples in each request to keep track of error handling:
+![postman example](/docs/postman-duplicate-email.png)
+
+I've used Trello board to allocate tasks and deadlines for each user story/feature, in order to keep track of project progress.
+
+![trello tasks](docs/trello-tasks.png)
